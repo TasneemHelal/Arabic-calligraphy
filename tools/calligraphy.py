@@ -47,6 +47,16 @@ class Font:
         names = [self.tt.getGlyphName(i.codepoint) for i in buf.glyph_infos]
         return names, buf.glyph_positions
 
+    def glyph_outline(self, char: str):
+        """Outline of one glyph straight from the cmap (used for standalone marks)."""
+        name = self.tt.getBestCmap()[ord(char)]
+        pen = SVGPathPen(self.glyphset)
+        bpen = BoundsPen(self.glyphset)
+        t = (1, 0, 0, -1, 0, 0)
+        self.glyphset[name].draw(TransformPen(pen, t))
+        self.glyphset[name].draw(TransformPen(bpen, t))
+        return pen.getCommands(), bpen.bounds
+
     def outline(self, text: str):
         """Return (svg_path_d, bbox) in font units with the y axis flipped (SVG down)."""
         names, pos = self.shape(text)
