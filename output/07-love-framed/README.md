@@ -18,3 +18,5 @@ Regenerate: `python3 designs/love_framed.py` (`SEED`, `CROSS_TOL`, `PADDING_IN`,
 **Revision 3 (marks spread evenly):** harakat are allowed only within 7 mm of a word's ink, so they sit in the small gaps between words and never in open patches. They keep at least 9 mm from each other, so they never cluster (320 marks). Open patches are filled with an extra word instead (repeat distance relaxed to 1.25 em for this pass only).
 
 **Revision 4 (fill the circled gaps):** built on the revision 2 arrangement, which the client prefers. Extra words go into open patches first (repeat distance 1.0 em, crossing tolerance raised to 11 % for this pass only). Then 520 harakat fill the remaining small gaps: each within 14 mm of a word, and at least 6.5 mm from the next mark, so they spread evenly with no clusters.
+
+**Revision 5 (second set of circled pockets):** a last pass tries the 9 shortest words at 7° steps from −70° to +70° (and ±90°), with crossing tolerance 2× and repeat distance 0.75 em. A word is kept only if its centre lands at least 6 mm from existing ink. In practice only ودّ fits pockets that small.

@@ -49,6 +49,8 @@ MAX_MARKS = 520
 NEAR_MM = 14.0         # marks only in gaps within this distance of a word
 MARK_SPACING_MM = 6.5  # minimum distance between two marks (no clusters)
 EXTRA_REPEAT_DIST_EM = 1.0
+POCKET_REPEAT_DIST_EM = 0.75
+POCKET_MIN_MM = 6.0   # a pocket = point at least this far from any ink
 CORE_MM = float(os.environ.get("CORE_MM", "1.6"))        # thicker strokes = protected letter bodies
 CROSS_TOL = float(os.environ.get("CROSS_TOL", "0.07"))   # share of a word's ink allowed to cross
 SAME_WORD_DIST_EM = 2.6   # two copies of a word stay at least this far apart (centres)
@@ -137,6 +139,33 @@ def make(size_name="A1", preview_only=False):
     for t in pool + pool + pool:
         if pk.try_place(Word(t, 1.0, rotations=WORD_ROTS + (-52, 52, -90)), em) is not None:
             extra.append(t)
+    # final pass for narrow pockets (client-circled): short words, many more angles
+    pk.same_word_r = POCKET_REPEAT_DIST_EM * em * RES
+    pk.interlace["tol"] = CROSS_TOL * 2.0
+    # a pocket word is kept only if its centre lands in a real empty pocket
+    from scipy.ndimage import distance_transform_edt
+    import copy
+    hole = distance_transform_edt(~pk.occ) / RES > POCKET_MIN_MM
+    short = sorted(LOVE_WORDS, key=len)[:9]
+    angles = tuple(range(-70, 71, 7)) + (90, -90)
+    for _ in range(4):
+        got = 0
+        for t in short:
+            snap = (pk.occ.copy(), pk.core.copy(), copy.deepcopy(pk.centers), len(pk.placed))
+            p_ = pk.try_place(Word(t, 1.0, rotations=angles), em)
+            if p_ is None:
+                continue
+            g = p_.geom
+            cy, cx = int(g["py"] + g["m"].shape[0] / 2), int(g["px"] + g["m"].shape[1] / 2)
+            if hole[min(cy, hole.shape[0] - 1), min(cx, hole.shape[1] - 1)]:
+                extra.append(t)
+                got += 1
+                hole = distance_transform_edt(~pk.occ) / RES > POCKET_MIN_MM
+            else:      # would only crowd an area that is already full: undo
+                pk.occ, pk.core, pk.centers = snap[0], snap[1], snap[2]
+                del pk.placed[snap[3]:]
+        if not got:
+            break
     print(f"extra words placed={len(extra)}: {' '.join(extra)}")
 
     # straight sides: slide edge words out to the rectangle's edges
