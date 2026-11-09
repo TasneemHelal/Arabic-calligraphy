@@ -26,3 +26,5 @@ Regenerate: `python3 designs/love_framed.py` (`SEED`, `CROSS_TOL`, `PADDING_IN`,
 **Revision 7 (more words, more crossing, fewer marks):** new arrangement (seed 41) with an em of 54 mm, chosen as the size that places the most words while the block stays full: 81 placed in order plus 14 in pockets, 95 in total. Words may be extended horizontally by 1.3–1.7×; Gulzar has no tatweel glyph, so kashida would break the joins. Crossing tolerance is raised to 12 % of a word's ink, thin strokes only; letter bodies and dots remain protected, so no word blocks another. 300 harakat, each within 12 mm of a word and at least 9 mm apart.
 
 **Revision 8 (lighter):** the client found revision 7 heavy. The largest size that still fills the block is chosen: em 73 mm, giving 41 words in order plus 8 in pockets, 49 in total. Crossing, extension and the 300 light harakat are unchanged.
+
+**Revision 9 (weak points):** horizontal extension is capped at 1.3× in every pass. No upright words: angles stay within ±48°. A longer pocket pass (8 rounds) fills the left-edge pockets.

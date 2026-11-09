@@ -132,12 +132,12 @@ def make(size_name="A1", preview_only=False):
     rng_w = random.Random(SEED + 1)
     pool = EXTRA_WORDS[:]
     rng_w.shuffle(pool)
-    extra = [t for t in pool if pk.try_place(Word(t, 1.0, rotations=WORD_ROTS, stretches=(1.0, 1.3, 1.6)), em) is not None]
+    extra = [t for t in pool if pk.try_place(Word(t, 1.0, rotations=WORD_ROTS, stretches=(1.0, 1.15, 1.3)), em) is not None]
     # second pass: open patches get a word, not a heap of marks (repeat distance relaxed)
     pk.same_word_r = EXTRA_REPEAT_DIST_EM * em * RES
     pk.interlace["tol"] = CROSS_TOL * 1.6
     for t in pool + pool + pool:
-        if pk.try_place(Word(t, 1.0, rotations=WORD_ROTS + (-52, 52, -90), stretches=(1.0, 1.3, 1.6)), em) is not None:
+        if pk.try_place(Word(t, 1.0, rotations=WORD_ROTS + (-48, 48), stretches=(1.0, 1.15, 1.3)), em) is not None:
             extra.append(t)
     # final pass for narrow pockets (client-circled): short words, many more angles
     pk.same_word_r = POCKET_REPEAT_DIST_EM * em * RES
@@ -147,12 +147,12 @@ def make(size_name="A1", preview_only=False):
     import copy
     hole = distance_transform_edt(~pk.occ) / RES > POCKET_MIN_MM
     short = sorted(LOVE_WORDS, key=len)
-    angles = tuple(range(-60, 61, 12)) + (90, -90)
-    for _ in range(6):
+    angles = tuple(range(-48, 49, 8))   # no upright words (client)
+    for _ in range(8):
         got = 0
         for t in short:
             snap = (pk.occ.copy(), pk.core.copy(), copy.deepcopy(pk.centers), len(pk.placed))
-            p_ = pk.try_place(Word(t, 1.0, rotations=angles, stretches=(1.0, 1.35, 1.7)), em)
+            p_ = pk.try_place(Word(t, 1.0, rotations=angles, stretches=(1.0, 1.15, 1.3)), em)
             if p_ is None:
                 continue
             g = p_.geom
