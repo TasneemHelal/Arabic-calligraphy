@@ -60,6 +60,16 @@ SEED = int(os.environ.get("SEED", "41"))
 GRADIENT = [("0", "#E0222B"), ("0.45", "#B5121E"), ("1", "#6A0D1A")]
 
 
+ANGLE_CYCLE = [0, 26, -26, 14, -38, 38, -14, 0, -26, 26, 38, -14, 14, -38]
+
+
+def angle_mix(i):
+    """Client: mix the angles. Each word gets its own target angle (shuffled cycle of
+    straight, rising and falling); other angles cost extra in proportion to the gap."""
+    pref = ANGLE_CYCLE[(i * 5 + SEED) % len(ANGLE_CYCLE)]
+    return {r: (0 if r == pref else 10 + 0.35 * abs(r - pref)) for r in WORD_ROTS}
+
+
 def place_words(bw, bh, em, n_cycles=7):
     """Place phrase words in reading order at ONE size. Stops at the first word that
     no longer fits, then keeps only complete phrases."""
@@ -92,7 +102,8 @@ def place_words(bw, bh, em, n_cycles=7):
             # may start in an earlier gap nearby, so holes get filled
             slack = 150 if i in starts else 12
             after = None if i in starts else prev
-            p = pk.try_place(w, em, min_score=last - slack, after=after)
+            p = pk.try_place(w, em, min_score=last - slack, after=after,
+                             rot_pen=angle_mix(i))
             if p is None:
                 return pk, i
             last = p.score
@@ -132,12 +143,12 @@ def make(size_name="A1", preview_only=False):
     rng_w = random.Random(SEED + 1)
     pool = EXTRA_WORDS[:]
     rng_w.shuffle(pool)
-    extra = [t for t in pool if pk.try_place(Word(t, 1.0, rotations=WORD_ROTS, stretches=(1.0, 1.15, 1.3)), em) is not None]
+    extra = [t for t in pool if pk.try_place(Word(t, 1.0, rotations=WORD_ROTS, stretches=(1.0, 1.15, 1.3)), em, rot_pen=angle_mix(len(pk.placed))) is not None]
     # second pass: open patches get a word, not a heap of marks (repeat distance relaxed)
     pk.same_word_r = EXTRA_REPEAT_DIST_EM * em * RES
     pk.interlace["tol"] = CROSS_TOL * 1.6
     for t in pool + pool + pool:
-        if pk.try_place(Word(t, 1.0, rotations=WORD_ROTS + (-48, 48), stretches=(1.0, 1.15, 1.3)), em) is not None:
+        if pk.try_place(Word(t, 1.0, rotations=WORD_ROTS + (-48, 48), stretches=(1.0, 1.15, 1.3)), em, rot_pen=angle_mix(len(pk.placed))) is not None:
             extra.append(t)
     # final pass for narrow pockets (client-circled): short words, many more angles
     pk.same_word_r = POCKET_REPEAT_DIST_EM * em * RES
@@ -152,7 +163,7 @@ def make(size_name="A1", preview_only=False):
         got = 0
         for t in short:
             snap = (pk.occ.copy(), pk.core.copy(), copy.deepcopy(pk.centers), len(pk.placed))
-            p_ = pk.try_place(Word(t, 1.0, rotations=angles, stretches=(1.0, 1.15, 1.3)), em)
+            p_ = pk.try_place(Word(t, 1.0, rotations=angles, stretches=(1.0, 1.15, 1.3)), em, rot_pen=angle_mix(len(pk.placed)))
             if p_ is None:
                 continue
             g = p_.geom

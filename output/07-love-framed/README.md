@@ -28,3 +28,5 @@ Regenerate: `python3 designs/love_framed.py` (`SEED`, `CROSS_TOL`, `PADDING_IN`,
 **Revision 8 (lighter):** the client found revision 7 heavy. The largest size that still fills the block is chosen: em 73 mm, giving 41 words in order plus 8 in pockets, 49 in total. Crossing, extension and the 300 light harakat are unchanged.
 
 **Revision 9 (weak points):** horizontal extension is capped at 1.3× in every pass. No upright words: angles stay within ±48°. A longer pocket pass (8 rounds) fills the left-edge pockets.
+
+**Revision 10 (mixed angles):** each word gets its own target angle from a shuffled cycle (0°, ±14°, ±26°, ±38°), and other angles cost extra in proportion to their distance from it. The block therefore mixes straight, rising and falling words instead of one dominant slope. The em settled at 70 mm, with 46 words in order plus 8 in pockets.

@@ -114,7 +114,8 @@ class Packer:
                 self._cache[text] = self.font.outline(text)
         return self._cache[text]
 
-    def try_place(self, word: Word, em_mm: float, min_score=-1e9, max_score=1e9, after=None):
+    def try_place(self, word: Word, em_mm: float, min_score=-1e9, max_score=1e9, after=None,
+                  rot_pen=None):
         """after=(cx, cy, line) px: centre of the previous word of the same phrase; the new
         word must come after it in reading order (to its left, or on a lower line)."""
         d, bounds = self._shape(word.text)
@@ -165,7 +166,7 @@ class Packer:
             ys, xs = np.nonzero(ok)
             # reading order: top first, then right-most; flow < 1 lets a line drift
             right_gap = (self.W - (xs + mw)) / self.res
-            score = (ys / self.res + self.flow * right_gap + self.rot_penalty.get(rot, 20)
+            score = (ys / self.res + self.flow * right_gap + (rot_pen or self.rot_penalty).get(rot, 20)
                      + 6 * (sx - 1))
             score = score + np.array([self.rng.uniform(0, 3) for _ in range(1)])[0]
             if cross is not None and il["reward"]:
