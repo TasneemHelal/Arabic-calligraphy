@@ -22,13 +22,18 @@ def svg(letters, W, H, title, ink, dot, paper, U=50, gap=2, border=1, mat=3,
         p.append(ring(o2, inner_border * U, TW - 2 * o2, TH - 2 * o2))
     cell = lambda cs, col: f'<path fill="{col}" d="' + "".join(
         f"M{(c+off)*U} {(r+off)*U}h{U}v{U}h{-U}z" for r, c in cs) + '"/>'
-    p.append(cell([c for l in letters for c in l["ink"]], ink))
+    by_col = {}
+    for l in letters:
+        by_col.setdefault(l.get("color", ink), []).extend(l["ink"])
+    for col, cs in by_col.items():
+        p.append(cell(cs, col))
     p.append(cell([c for l in letters for c in l["dots"]], ink if mode == "mono" else dot))
     def bbox(l):
         cs = l["ink"] | l["dots"]
         return (min(r for r, c in cs), max(r for r, c in cs), min(c for r, c in cs), max(c for r, c in cs))
     if mode == "check":
         for i, l in enumerate(letters):
+            if l.get("ornament"): continue
             r0, r1, c0, c1 = bbox(l); col = PAL[i % len(PAL)]
             p.append(f'<rect x="{(c0+off)*U+5}" y="{(r0+off)*U+5}" width="{(c1-c0+1)*U-10}" height="{(r1-r0+1)*U-10}" '
                      f'fill="none" stroke="{col}" stroke-width="6" stroke-dasharray="14 8"/>')
@@ -37,6 +42,7 @@ def svg(letters, W, H, title, ink, dot, paper, U=50, gap=2, border=1, mat=3,
     if mode == "path":
         pts = []
         for l in letters:
+            if l.get("ornament") or not l["ink"]: continue
             body = [c for c in l["ink"] if c not in l.get("conn", set())] or list(l["ink"])
             r = sum(a for a, b in body) / len(body); c = sum(b for a, b in body) / len(body)
             pts.append(((c + off + .5) * U, (r + off + .5) * U))
