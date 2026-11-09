@@ -133,11 +133,55 @@ class Packer:
         Y = (py + oy) / self.res
         tf = f"translate({X:.3f} {Y:.3f}) rotate({rot}) scale({s:.6f}) translate({-cx:.1f} {-cy:.1f})"
         p = Placed(word, d, tf, sc)
+        p.geom = dict(m=m, px=int(px), py=int(py), ox=ox, oy=oy, rot=rot, s=s, cx=cx, cy=cy)
         self.placed.append(p)
         return p
 
     def coverage(self):
         return self.occ.mean()
+
+    def snap_to_edges(self, reach_mm, passes=2):
+        """Slide words that sit near a block edge outward until their ink touches that
+        edge, never closer than the word gap to any other ink. Gives straight sides."""
+        reach = int(reach_mm * self.res)
+        for _ in range(passes):
+            for p in self.placed:
+                g = getattr(p, "geom", None)
+                if g is None or p.word.filler:
+                    continue
+                m = g["m"]
+                mh, mw = m.shape
+                ys, xs = np.nonzero(m)
+                for dx, dy in ((-1, 0), (1, 0), (0, -1), (0, 1)):
+                    px, py = g["px"], g["py"]
+                    if dx < 0:
+                        dist = px + xs.min()
+                    elif dx > 0:
+                        dist = self.W - 1 - (px + xs.max())
+                    elif dy < 0:
+                        dist = py + ys.min()
+                    else:
+                        dist = self.H - 1 - (py + ys.max())
+                    if dist <= 0 or dist > reach:
+                        continue
+                    self.occ[py:py + mh, px:px + mw] &= ~m
+                    best = 0
+                    for step in range(dist, 0, -1):
+                        nx, ny = px + dx * step, py + dy * step
+                        y0, y1 = max(0, ny - self.gap), min(self.H, ny + mh + self.gap)
+                        x0, x1 = max(0, nx - self.gap), min(self.W, nx + mw + self.gap)
+                        win = binary_dilation(self.occ[y0:y1, x0:x1], iterations=self.gap) \
+                            if self.gap else self.occ[y0:y1, x0:x1]
+                        sub = win[ny - y0:ny - y0 + mh, nx - x0:nx - x0 + mw]
+                        if sub.shape == m.shape and not (sub & m).any():
+                            best = step
+                            break
+                    g["px"], g["py"] = px + dx * best, py + dy * best
+                    self.occ[g["py"]:g["py"] + mh, g["px"]:g["px"] + mw] |= m
+                X = (g["px"] + g["ox"]) / self.res
+                Y = (g["py"] + g["oy"]) / self.res
+                p.transform = (f"translate({X:.3f} {Y:.3f}) rotate({g['rot']}) "
+                               f"scale({g['s']:.6f}) translate({-g['cx']:.1f} {-g['cy']:.1f})")
 
     def lowest_ink_mm(self):
         rows = np.nonzero(self.occ.any(1))[0]
