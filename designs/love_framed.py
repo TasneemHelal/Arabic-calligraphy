@@ -10,6 +10,8 @@ A1 portrait by default, 3 mm bleed.
 """
 import os
 import random
+
+import numpy as np
 import sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))
@@ -27,7 +29,7 @@ PAPER = "#FBF4E7"
 STROKE = 0.01
 RES = 1.5           # px per mm for collision maps
 WORD_GAP_MM = 1.6   # clear space between words (keeps every word readable)
-MARK_GAP_MM = 2.6   # light sprinkle only (client: focus on the words)
+MARK_GAP_MM = 1.6   # clearance between a mark and the words around it
 
 # 40 classical and everyday words of love (each a complete meaning on its own)
 LOVE_WORDS = ["غرام", "شغف", "حب", "ودّ", "اشتياق", "لهفة", "مودّة", "ألفة", "وصال",
@@ -43,7 +45,10 @@ MARKS = ["َ", "ُ", "ِ", "ْ", "ّ"]
 WORD_ROTS = (0, -14, 14, -26, 26, -38, 38)
 ROT_PENALTY = {0: 0, -14: 2, 14: 2, -26: 4, 26: 4, -38: 8, 38: 8}
 
-MAX_MARKS = 260
+MAX_MARKS = 320
+NEAR_MM = 7.0          # marks only in gaps within this distance of a word
+MARK_SPACING_MM = 9.0  # minimum distance between two marks (no clusters)
+EXTRA_REPEAT_DIST_EM = 1.25
 CORE_MM = float(os.environ.get("CORE_MM", "1.6"))        # thicker strokes = protected letter bodies
 CROSS_TOL = float(os.environ.get("CROSS_TOL", "0.07"))   # share of a word's ink allowed to cross
 SAME_WORD_DIST_EM = 2.6   # two copies of a word stay at least this far apart (centres)
@@ -126,6 +131,11 @@ def make(size_name="A1", preview_only=False):
     pool = EXTRA_WORDS[:]
     rng_w.shuffle(pool)
     extra = [t for t in pool if pk.try_place(Word(t, 1.0, rotations=WORD_ROTS), em) is not None]
+    # second pass: open patches get a word, not a heap of marks (repeat distance relaxed)
+    pk.same_word_r = EXTRA_REPEAT_DIST_EM * em * RES
+    for t in pool + pool:
+        if pk.try_place(Word(t, 1.0, rotations=WORD_ROTS + (-52, 52, -90)), em) is not None:
+            extra.append(t)
     print(f"extra words placed={len(extra)}: {' '.join(extra)}")
 
     # straight sides: slide edge words out to the rectangle's edges
@@ -133,17 +143,39 @@ def make(size_name="A1", preview_only=False):
     pk.rebuild_occ()
     words_placed = list(pk.placed)
 
-    # harakat fill the gaps between words, inside the rectangular block only
+    # harakat fill the SMALL gaps between words only, spread evenly (client): a mark may
+    # sit only within NEAR_MM of a word's ink, and marks keep MARK_SPACING_MM apart
+    from scipy.ndimage import distance_transform_edt
+    words_occ = pk.occ.copy()
+    dist = distance_transform_edt(~words_occ) / RES
+    far = dist > NEAR_MM
     pk.gap = max(1, int(round(MARK_GAP_MM * RES)))
     rng = random.Random(SEED)
+    sp = int(MARK_SPACING_MM * RES)
+    yy, xx = np.ogrid[-sp:sp + 1, -sp:sp + 1]
+    disk = xx ** 2 + yy ** 2 <= sp ** 2
+    taken = np.zeros_like(words_occ)
     misses = 0
     for _ in range(MAX_MARKS):
         size = rng.choice((0.36, 0.42, 0.48))
         mark = Word(rng.choice(MARKS), size, rotations=(0, -20, 20, -40), filler=True)
-        if pk.try_place(mark, em * size) is None:
+        base = pk.occ.copy()
+        pk.occ = base | far | taken          # forbidden for this mark only
+        n_before = len(pk.placed)
+        ok = pk.try_place(mark, em * size)
+        pk.occ = base
+        if ok is None:
             misses += 1
-            if misses > 400:
+            if misses > 300:
                 break
+            continue
+        g = ok.geom
+        mh, mw = g["m"].shape
+        pk.occ[g["py"]:g["py"] + mh, g["px"]:g["px"] + mw] |= g["m"]
+        cy, cx = int(g["py"] + mh / 2), int(g["px"] + mw / 2)
+        y0, y1 = max(0, cy - sp), min(taken.shape[0], cy + sp + 1)
+        x0, x1 = max(0, cx - sp), min(taken.shape[1], cx + sp + 1)
+        taken[y0:y1, x0:x1] |= disk[y0 - (cy - sp):y1 - (cy - sp), x0 - (cx - sp):x1 - (cx - sp)]
     marks = pk.placed[len(words_placed):]
     print(f"harakat placed={len(marks)} final coverage={pk.coverage():.2f}")
 

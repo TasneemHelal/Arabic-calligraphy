@@ -14,3 +14,5 @@ Words in revision 1 (40): حبّ · هوى · عشق · شوق · غرام · و
 
 Paper `#FBF4E7`. Files: SVG · PDF (3 mm bleed, TrimBox = A1, RGB) · 300 DPI PNG · preview.
 Regenerate: `python3 designs/love_framed.py` (`SEED`, `CROSS_TOL`, `PADDING_IN`, `SIZE`).
+
+**Revision 3 (marks spread evenly):** harakat are allowed only within 7 mm of a word's ink, so they sit in the small gaps between words and never in open patches. They keep at least 9 mm from each other, so they never cluster (320 marks). Open patches are filled with an extra word instead (repeat distance relaxed to 1.25 em for this pass only).
