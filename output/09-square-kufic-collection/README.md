@@ -1,5 +1,7 @@
 # Collection 09 · Square Kufic (Kufi Murabba'), Collection 01
 
+> **Withdrawn.** The client rejected this collection because of letterform and accuracy problems. It is replaced by the one-at-a-time, verified series that starts at `output/10-kufic-bismillah`.
+
 Ten original compositions. Every letter is built by hand on a square grid in `tools/kufic.py`: one cell is one stroke width and also one gap. No font is used. Dots are square cells in an accent color. Kashida (horizontal extension) justifies each line, and in pieces 01, 05 and 07 each line slides up into the free space of the line above it (interlocking).
 
 | # | Phrase | Meaning | Theme / source | Composition | Palette |
