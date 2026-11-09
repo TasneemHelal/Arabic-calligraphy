@@ -16,19 +16,15 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(HERE)
 sys.path.insert(0, os.path.join(ROOT, "tools"))
 
-from calligraphy import Font, SIZES_MM, export, kashida_slots, with_kashida  # noqa: E402
+from calligraphy import Font, SIZES_MM, export  # noqa: E402
 from pack import Packer, Word  # noqa: E402
 
 FONT_DIR = os.environ.get("FONT_DIR", os.path.join(ROOT, "fonts"))
-# The reference is free-composed Naskh, so the default is Amiri (classical Naskh, OFL),
-# which also supports proper kashida elongation. FONT=Gulzar-Regular.ttf restores v1.
-FONT_FILE = os.environ.get("FONT", "Amiri-Bold.ttf")
-font = Font(os.path.join(FONT_DIR, FONT_FILE))
-NASKH = "Amiri" in FONT_FILE
+font = Font(os.path.join(FONT_DIR, "Gulzar-Regular.ttf"))
 
 INK = "#BF1219"
 PAPER = "#FBF4E7"
-STROKE = float(os.environ.get("STROKE", "0.0" if "Amiri" in os.environ.get("FONT", "Amiri") else "0.01"))
+STROKE = 0.01
 RES = 1.5           # px per mm for collision maps
 WORD_GAP_MM = 1.6   # clear space between words (keeps every word readable)
 MARK_GAP_MM = 3.0   # breathing room around each haraka
@@ -61,15 +57,6 @@ MAX_MARKS = 230
 SEED = int(os.environ.get("SEED", "21"))
 
 
-def elongate(word, i):
-    """Naskh only: give some words a classical kashida (1-2 tatweel), as the reference's
-    long extensions. Deterministic per word position; letter size never changes."""
-    if not NASKH or not kashida_slots(word):
-        return word
-    k = random.Random(SEED * 1000 + i).choice((0, 0, 1, 2))
-    return with_kashida(word, k)
-
-
 def place_words(bw, bh, em, n_cycles=3):
     """Place phrase words in reading order at ONE size. Stops at the first word that
     no longer fits, then keeps only complete phrases."""
@@ -92,7 +79,7 @@ def place_words(bw, bh, em, n_cycles=3):
         last = -1e9
         starts = set(ends_[:-1]) | {0}
         for i in range(count):
-            w = Word(elongate(words[i][0], i), 1.0, rotations=WORD_ROTS)
+            w = Word(words[i][0], 1.0, rotations=WORD_ROTS)
             # inside a phrase the next word must follow the previous one; a new phrase
             # may start in an earlier gap nearby, so holes get filled
             slack = 150 if i in starts else 12
@@ -117,7 +104,7 @@ def make(size_name="A1", preview_only=False):
     # choose the one word size that fills the block best with complete phrases
     best = None
     for k in range(4):
-        em = bw * ((0.105 + 0.008 * k) if NASKH else (0.135 + 0.006 * k))
+        em = bw * (0.135 + 0.006 * k)
         pk, n = place_words(bw, bh, em)
         reach = pk.lowest_ink_mm() / bh
         score = pk.coverage() - (0.2 if reach < 0.9 else 0)
