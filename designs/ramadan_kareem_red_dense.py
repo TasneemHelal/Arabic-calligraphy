@@ -27,7 +27,7 @@ PAPER = "#FBF4E7"
 STROKE = 0.01
 RES = 1.5           # px per mm for collision maps
 WORD_GAP_MM = 1.6   # clear space between words (keeps every word readable)
-MARK_GAP_MM = 2.2   # breathing room around each haraka (reference rhythm)
+MARK_GAP_MM = 3.0   # breathing room around each haraka
 
 PHRASES = [
     "رمضان كريم",
@@ -43,6 +43,9 @@ PHRASES = [
     "شهر القرآن",
     "اللهم تقبّل صيامنا وقيامنا",
 ]
+# Extra single Ramadan words (complete meanings) that fill open pockets, same size
+EXTRA_WORDS = ["نور", "خير", "بركة", "رحمة", "صيام", "قيام", "هلال", "مغفرة", "سحور",
+               "إفطار", "تراويح", "فانوس", "دعاء", "سكينة", "صدقة", "إيمان", "ذكر", "فرحة"]
 # fatha, damma, kasra, sukun, shadda
 MARKS = ["َ", "ُ", "ِ", "ْ", "ّ"]
 
@@ -50,7 +53,7 @@ MARKS = ["َ", "ُ", "ِ", "ْ", "ّ"]
 WORD_ROTS = (0, -14, 14, -26, 26, -38, 38)
 ROT_PENALTY = {0: 0, -14: 2, 14: 2, -26: 4, 26: 4, -38: 8, 38: 8}
 
-MAX_MARKS = 650
+MAX_MARKS = 230
 SEED = int(os.environ.get("SEED", "21"))
 
 
@@ -112,6 +115,17 @@ def make(size_name="A1", preview_only=False):
     pk, n = place_words(bw, bh, em)
     words_placed = [p for p in pk.placed]
     print(f"final em={em:.1f}mm words={n} coverage={pk.coverage():.2f}")
+
+    # extra words, same size and directions, dropped into the open pockets
+    rng_w = random.Random(SEED + 1)
+    pool = EXTRA_WORDS[:]
+    rng_w.shuffle(pool)
+    extra = 0
+    for t in pool + pool:
+        if pk.try_place(Word(t, 1.0, rotations=WORD_ROTS, filler=True), em) is not None:
+            extra += 1
+    print(f"extra words placed={extra} coverage={pk.coverage():.2f}")
+    words_placed = list(pk.placed)
 
     # harakat fill the gaps between words, inside the rectangular block only
     pk.gap = max(1, int(round(MARK_GAP_MM * RES)))

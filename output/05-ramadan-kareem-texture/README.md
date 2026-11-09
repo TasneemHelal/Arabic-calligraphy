@@ -4,7 +4,8 @@
 |---|---|
 | Same font, same size for every word | Gulzar (OFL), one em size (70 mm at A1) for every word |
 | Different directions but readable | Words set at 0°, ±14°, ±26° or ±38°. No word is ever crossed by another (1.6 mm clearance), and words of a phrase follow in reading order |
-| Gaps filled with harakat | 650 fatha, damma, kasra, sukun and shadda marks in three close sizes, placed in the gaps with 2.2 mm breathing room |
+| Gaps filled with harakat | 230 fatha, damma, kasra, sukun and shadda marks in three close sizes, with 3 mm breathing room (revision: fewer marks) |
+| Extra words (revision) | Single Ramadan words at the same size and directions fill the open pockets: 9 fit at A1 (e.g. فرحة · صدقة · رحمة · دعاء · سحور · نور) |
 | Compact block | Rectangle inside an 8 % safe margin |
 
 | Spec | Value |
