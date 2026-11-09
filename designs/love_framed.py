@@ -29,7 +29,7 @@ PAPER = "#FBF4E7"
 STROKE = 0.01
 RES = 1.5           # px per mm for collision maps
 WORD_GAP_MM = 1.6   # clear space between words (keeps every word readable)
-MARK_GAP_MM = 1.6   # clearance between a mark and the words around it
+MARK_GAP_MM = 1.8   # clearance between a mark and the words around it
 
 # 40 classical and everyday words of love (each a complete meaning on its own)
 LOVE_WORDS = ["غرام", "شغف", "حب", "ودّ", "اشتياق", "لهفة", "مودّة", "ألفة", "وصال",
@@ -45,10 +45,10 @@ MARKS = ["َ", "ُ", "ِ", "ْ", "ّ"]
 WORD_ROTS = (0, -14, 14, -26, 26, -38, 38)
 ROT_PENALTY = {0: 0, -14: 2, 14: 2, -26: 4, 26: 4, -38: 8, 38: 8}
 
-MAX_MARKS = 320
-NEAR_MM = 7.0          # marks only in gaps within this distance of a word
-MARK_SPACING_MM = 9.0  # minimum distance between two marks (no clusters)
-EXTRA_REPEAT_DIST_EM = 1.25
+MAX_MARKS = 520
+NEAR_MM = 14.0         # marks only in gaps within this distance of a word
+MARK_SPACING_MM = 6.5  # minimum distance between two marks (no clusters)
+EXTRA_REPEAT_DIST_EM = 1.0
 CORE_MM = float(os.environ.get("CORE_MM", "1.6"))        # thicker strokes = protected letter bodies
 CROSS_TOL = float(os.environ.get("CROSS_TOL", "0.07"))   # share of a word's ink allowed to cross
 SAME_WORD_DIST_EM = 2.6   # two copies of a word stay at least this far apart (centres)
@@ -133,7 +133,8 @@ def make(size_name="A1", preview_only=False):
     extra = [t for t in pool if pk.try_place(Word(t, 1.0, rotations=WORD_ROTS), em) is not None]
     # second pass: open patches get a word, not a heap of marks (repeat distance relaxed)
     pk.same_word_r = EXTRA_REPEAT_DIST_EM * em * RES
-    for t in pool + pool:
+    pk.interlace["tol"] = CROSS_TOL * 1.6
+    for t in pool + pool + pool:
         if pk.try_place(Word(t, 1.0, rotations=WORD_ROTS + (-52, 52, -90)), em) is not None:
             extra.append(t)
     print(f"extra words placed={len(extra)}: {' '.join(extra)}")
