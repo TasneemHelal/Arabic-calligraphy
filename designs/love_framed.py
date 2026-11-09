@@ -45,17 +45,17 @@ MARKS = ["َ", "ُ", "ِ", "ْ", "ّ"]
 WORD_ROTS = (0, -14, 14, -26, 26, -38, 38)
 ROT_PENALTY = {0: 0, -14: 2, 14: 2, -26: 4, 26: 4, -38: 8, 38: 8}
 
-MAX_MARKS = 700
-NEAR_MM = 24.0         # marks only in gaps within this distance of a word
-MARK_SPACING_MM = 5.5  # minimum distance between two marks (no clusters)
+MAX_MARKS = 300
+NEAR_MM = 12.0         # marks only in gaps within this distance of a word
+MARK_SPACING_MM = 9.0  # minimum distance between two marks (no clusters)
 EXTRA_REPEAT_DIST_EM = 1.0
 POCKET_REPEAT_DIST_EM = 0.55
 POCKET_MIN_MM = 5.0   # a pocket = point at least this far from any ink
 CORE_MM = float(os.environ.get("CORE_MM", "1.6"))        # thicker strokes = protected letter bodies
-CROSS_TOL = float(os.environ.get("CROSS_TOL", "0.07"))   # share of a word's ink allowed to cross
+CROSS_TOL = float(os.environ.get("CROSS_TOL", "0.12"))   # share of a word's ink allowed to cross
 SAME_WORD_DIST_EM = 2.6   # two copies of a word stay at least this far apart (centres)
 PADDING_IN = float(os.environ.get("PADDING_IN", "3"))   # paper edge -> content
-SEED = int(os.environ.get("SEED", "34"))
+SEED = int(os.environ.get("SEED", "41"))
 # vertical ink gradient, bright red at the top to deep maroon at the bottom (reference)
 GRADIENT = [("0", "#E0222B"), ("0.45", "#B5121E"), ("1", "#6A0D1A")]
 
@@ -87,7 +87,7 @@ def place_words(bw, bh, em, n_cycles=7):
         starts = set(ends_[:-1]) | {0}
         prev = None
         for i in range(count):
-            w = Word(words[i][0], 1.0, rotations=WORD_ROTS)
+            w = Word(words[i][0], 1.0, rotations=WORD_ROTS, stretches=(1.0, 1.3))
             # inside a phrase the next word must follow the previous one; a new phrase
             # may start in an earlier gap nearby, so holes get filled
             slack = 150 if i in starts else 12
@@ -115,11 +115,11 @@ def make(size_name="A1", preview_only=False):
 
     # choose the one word size that fills the block best with complete phrases
     best = None
-    for k in range(4):
-        em = bw * (0.135 + 0.006 * k)
+    for k in range(3):
+        em = bw * (0.122 + 0.006 * k)
         pk, n = place_words(bw, bh, em)
         reach = pk.lowest_ink_mm() / bh
-        score = pk.coverage() - (0.2 if reach < 0.96 else 0)
+        score = n - (100 if reach < 0.96 else 0)   # most words, block filled
         print(f"  em={em:.1f}mm words={n} coverage={pk.coverage():.2f} reach={reach:.2f}")
         if best is None or score > best[0]:
             best = (score, em)
@@ -132,12 +132,12 @@ def make(size_name="A1", preview_only=False):
     rng_w = random.Random(SEED + 1)
     pool = EXTRA_WORDS[:]
     rng_w.shuffle(pool)
-    extra = [t for t in pool if pk.try_place(Word(t, 1.0, rotations=WORD_ROTS), em) is not None]
+    extra = [t for t in pool if pk.try_place(Word(t, 1.0, rotations=WORD_ROTS, stretches=(1.0, 1.3, 1.6)), em) is not None]
     # second pass: open patches get a word, not a heap of marks (repeat distance relaxed)
     pk.same_word_r = EXTRA_REPEAT_DIST_EM * em * RES
     pk.interlace["tol"] = CROSS_TOL * 1.6
     for t in pool + pool + pool:
-        if pk.try_place(Word(t, 1.0, rotations=WORD_ROTS + (-52, 52, -90)), em) is not None:
+        if pk.try_place(Word(t, 1.0, rotations=WORD_ROTS + (-52, 52, -90), stretches=(1.0, 1.3, 1.6)), em) is not None:
             extra.append(t)
     # final pass for narrow pockets (client-circled): short words, many more angles
     pk.same_word_r = POCKET_REPEAT_DIST_EM * em * RES
@@ -147,12 +147,12 @@ def make(size_name="A1", preview_only=False):
     import copy
     hole = distance_transform_edt(~pk.occ) / RES > POCKET_MIN_MM
     short = sorted(LOVE_WORDS, key=len)
-    angles = tuple(range(-70, 71, 7)) + (90, -90)
+    angles = tuple(range(-60, 61, 12)) + (90, -90)
     for _ in range(6):
         got = 0
         for t in short:
             snap = (pk.occ.copy(), pk.core.copy(), copy.deepcopy(pk.centers), len(pk.placed))
-            p_ = pk.try_place(Word(t, 1.0, rotations=angles), em)
+            p_ = pk.try_place(Word(t, 1.0, rotations=angles, stretches=(1.0, 1.35, 1.7)), em)
             if p_ is None:
                 continue
             g = p_.geom

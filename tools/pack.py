@@ -29,6 +29,7 @@ class Word:
     rotations: tuple = (0, 0, 10, 22, -10, -90)
     phrase: int = 0                   # phrase index (keeps word order inside phrases)
     filler: bool = False
+    stretches: tuple = (1.0,)         # horizontal extension factors to try (letters stay joined)
 
 
 @dataclass
@@ -39,7 +40,7 @@ class Placed:
     score: float
 
 
-def _raster(d, bounds, s, rot, stroke_units, res):
+def _raster(d, bounds, s, rot, stroke_units, res, sx=1.0):
     """Rasterise one word: returns (mask bool array, centre offset in px)."""
     x0, y0, x1, y1 = bounds
     pad = stroke_units
@@ -47,14 +48,14 @@ def _raster(d, bounds, s, rot, stroke_units, res):
     cx, cy = (x0 + x1) / 2, (y0 + y1) / 2
     k = s * res                      # font units -> px
     a = math.radians(rot)
-    hw, hh = (x1 - x0) / 2 * k, (y1 - y0) / 2 * k
+    hw, hh = (x1 - x0) / 2 * k * sx, (y1 - y0) / 2 * k
     W = abs(hw * math.cos(a)) + abs(hh * math.sin(a))
     H = abs(hw * math.sin(a)) + abs(hh * math.cos(a))
     w, h = max(2, int(math.ceil(2 * W)) + 2), max(2, int(math.ceil(2 * H)) + 2)
     svg = (f'<svg xmlns="http://www.w3.org/2000/svg" width="{w}" height="{h}">'
            f'<path d="{d}" fill="#000" stroke="#000" stroke-width="{stroke_units}" '
            f'stroke-linejoin="round" transform="translate({w/2} {h/2}) rotate({rot}) '
-           f'scale({k}) translate({-cx} {-cy})"/></svg>')
+           f'scale({k * sx} {k}) translate({-cx} {-cy})"/></svg>')
     png = cairosvg.svg2png(bytestring=svg.encode())
     import io
     m = np.asarray(Image.open(io.BytesIO(png)).split()[-1]) > 96
@@ -124,8 +125,9 @@ class Packer:
         occ_f = occ.astype(np.float32)
         best = None
         rots = list(dict.fromkeys(word.rotations))
-        for rot in rots:
-            m, (ox, oy), (cx, cy) = _raster(d, bounds, s, rot, stroke_units, self.res)
+        combos = [(r, sx) for sx in dict.fromkeys(word.stretches) for r in rots]
+        for rot, sx in combos:
+            m, (ox, oy), (cx, cy) = _raster(d, bounds, s, rot, stroke_units, self.res, sx)
             mh, mw = m.shape
             if mh >= self.H or mw >= self.W:
                 continue
@@ -163,7 +165,8 @@ class Packer:
             ys, xs = np.nonzero(ok)
             # reading order: top first, then right-most; flow < 1 lets a line drift
             right_gap = (self.W - (xs + mw)) / self.res
-            score = ys / self.res + self.flow * right_gap + self.rot_penalty.get(rot, 20)
+            score = (ys / self.res + self.flow * right_gap + self.rot_penalty.get(rot, 20)
+                     + 6 * (sx - 1))
             score = score + np.array([self.rng.uniform(0, 3) for _ in range(1)])[0]
             if cross is not None and il["reward"]:
                 score = score - il["reward"] * np.minimum(cross[ys, xs] / ink, il["tol"]) / il["tol"]
@@ -177,12 +180,12 @@ class Packer:
                 score = np.full_like(score, self.rng.uniform(0, 1))
             else:
                 i = np.argmin(np.where(sel, score, np.inf))
-            cand = (score[i], rot, xs[i], ys[i], m, ox, oy, cx, cy)
+            cand = (score[i], rot, xs[i], ys[i], m, ox, oy, cx, cy, sx)
             if best is None or cand[0] < best[0]:
                 best = cand
         if best is None:
             return None
-        sc, rot, px, py, m, ox, oy, cx, cy = best
+        sc, rot, px, py, m, ox, oy, cx, cy, sx = best
         mh, mw = m.shape
         self.occ[py:py + mh, px:px + mw] |= m
         if self.interlace is not None and not word.filler:
@@ -191,9 +194,10 @@ class Packer:
             self.centers.setdefault(self.word_key(word.text), []).append((px + mw / 2, py + mh / 2))
         X = (px + ox) / self.res
         Y = (py + oy) / self.res
-        tf = f"translate({X:.3f} {Y:.3f}) rotate({rot}) scale({s:.6f}) translate({-cx:.1f} {-cy:.1f})"
+        tf = (f"translate({X:.3f} {Y:.3f}) rotate({rot}) scale({s * sx:.6f} {s:.6f}) "
+              f"translate({-cx:.1f} {-cy:.1f})")
         p = Placed(word, d, tf, sc)
-        p.geom = dict(m=m, px=int(px), py=int(py), ox=ox, oy=oy, rot=rot, s=s, cx=cx, cy=cy)
+        p.geom = dict(m=m, px=int(px), py=int(py), ox=ox, oy=oy, rot=rot, s=s, cx=cx, cy=cy, sx=sx)
         self.placed.append(p)
         return p
 
@@ -241,7 +245,8 @@ class Packer:
                 X = (g["px"] + g["ox"]) / self.res
                 Y = (g["py"] + g["oy"]) / self.res
                 p.transform = (f"translate({X:.3f} {Y:.3f}) rotate({g['rot']}) "
-                               f"scale({g['s']:.6f}) translate({-g['cx']:.1f} {-g['cy']:.1f})")
+                               f"scale({g['s'] * g.get('sx', 1.0):.6f} {g['s']:.6f}) "
+                               f"translate({-g['cx']:.1f} {-g['cy']:.1f})")
 
     def lowest_ink_mm(self):
         rows = np.nonzero(self.occ.any(1))[0]
