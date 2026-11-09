@@ -16,7 +16,7 @@ from dataclasses import dataclass, field
 import cairosvg
 import numpy as np
 from PIL import Image
-from scipy.ndimage import binary_dilation
+from scipy.ndimage import binary_dilation, binary_opening
 from scipy.signal import fftconvolve
 
 from calligraphy import Font
@@ -78,6 +78,32 @@ class Packer:
                                            -90: 10, 90: 18, 35: 22}
         self.placed: list[Placed] = []
         self._cache = {}
+        # interlacing (off by default): thin strokes may cross thin strokes, never thick
+        # letter bodies or dots. See enable_interlace().
+        self.interlace = None
+        self.core = np.zeros((self.H, self.W), bool)
+        # minimum distance between two copies of the same word (0 = no rule)
+        self.same_word_r = 0
+        self.centers = {}
+
+    def enable_interlace(self, core_mm=2.0, cross_tol=0.035, reward=20.0):
+        """core_mm: strokes thicker than ~2*core_mm count as letter bodies (protected).
+        cross_tol: max share of a word's ink that may cross other words' thin strokes."""
+        self.interlace = dict(r=max(1, int(round(core_mm * self.res))),
+                              tol=cross_tol, reward=reward)
+
+    @staticmethod
+    def word_key(text):
+        return "".join(ch for ch in text
+                       if not (0x064B <= ord(ch) <= 0x0652 or ch in "\u0670\u0640"))
+
+    def rebuild_occ(self):
+        self.occ[:] = False
+        for p in self.placed:
+            g = getattr(p, "geom", None)
+            if g is not None:
+                mh, mw = g["m"].shape
+                self.occ[g["py"]:g["py"] + mh, g["px"]:g["px"] + mw] |= g["m"]
 
     def _shape(self, text):
         if text not in self._cache:
@@ -87,7 +113,9 @@ class Packer:
                 self._cache[text] = self.font.outline(text)
         return self._cache[text]
 
-    def try_place(self, word: Word, em_mm: float, min_score=-1e9, max_score=1e9):
+    def try_place(self, word: Word, em_mm: float, min_score=-1e9, max_score=1e9, after=None):
+        """after=(cx, cy, line) px: centre of the previous word of the same phrase; the new
+        word must come after it in reading order (to its left, or on a lower line)."""
         d, bounds = self._shape(word.text)
         upem = self.font.upem
         s = em_mm / upem                                  # font units -> mm
@@ -102,8 +130,34 @@ class Packer:
             if mh >= self.H or mw >= self.W:
                 continue
             ink = m.sum()
-            ov = fftconvolve(occ_f, m[::-1, ::-1].astype(np.float32), mode="valid")
-            ok = ov <= self.overlap * ink + 0.5
+            mk = m[::-1, ::-1].astype(np.float32)
+            il = self.interlace if not word.filler else None
+            if il is None:
+                ov = fftconvolve(occ_f, mk, mode="valid")
+                ok = ov <= self.overlap * ink + 0.5
+                cross = None
+            else:
+                # 1) new ink keeps clear of existing letter bodies and dots
+                core_d = binary_dilation(self.core, iterations=self.gap) if self.gap else self.core
+                ok = fftconvolve(core_d.astype(np.float32), mk, mode="valid") < 0.5
+                # 2) new letter bodies keep clear of all existing ink
+                mcore = binary_opening(m, iterations=il["r"])
+                ok &= fftconvolve(occ_f, mcore[::-1, ::-1].astype(np.float32),
+                                  mode="valid") < 0.5
+                # 3) thin-over-thin crossings are allowed, but only a little
+                cross = fftconvolve(self.occ.astype(np.float32), mk, mode="valid")
+                ok &= cross <= il["tol"] * ink + 0.5
+            if after is not None:
+                pcx, pcy, line = after
+                cy_ = (np.arange(ok.shape[0]) + mh / 2)[:, None]
+                cx_ = (np.arange(ok.shape[1]) + mw / 2)[None, :]
+                ok &= ((cx_ < pcx) & (np.abs(cy_ - pcy) < 1.4 * line)) | (cy_ > pcy + 0.35 * line)
+            if self.same_word_r and not word.filler:
+                key = self.word_key(word.text)
+                cy_ = (np.arange(ok.shape[0]) + mh / 2)[:, None]
+                cx_ = (np.arange(ok.shape[1]) + mw / 2)[None, :]
+                for (qx, qy) in self.centers.get(key, ()):
+                    ok &= (cx_ - qx) ** 2 + (cy_ - qy) ** 2 >= self.same_word_r ** 2
             if not ok.any():
                 continue
             ys, xs = np.nonzero(ok)
@@ -111,6 +165,8 @@ class Packer:
             right_gap = (self.W - (xs + mw)) / self.res
             score = ys / self.res + self.flow * right_gap + self.rot_penalty.get(rot, 20)
             score = score + np.array([self.rng.uniform(0, 3) for _ in range(1)])[0]
+            if cross is not None and il["reward"]:
+                score = score - il["reward"] * np.minimum(cross[ys, xs] / ink, il["tol"]) / il["tol"]
             sel = (score >= min_score) & (score <= max_score)
             if not sel.any():
                 continue
@@ -129,6 +185,10 @@ class Packer:
         sc, rot, px, py, m, ox, oy, cx, cy = best
         mh, mw = m.shape
         self.occ[py:py + mh, px:px + mw] |= m
+        if self.interlace is not None and not word.filler:
+            self.core[py:py + mh, px:px + mw] |= binary_opening(m, iterations=self.interlace["r"])
+        if not word.filler:
+            self.centers.setdefault(self.word_key(word.text), []).append((px + mw / 2, py + mh / 2))
         X = (px + ox) / self.res
         Y = (py + oy) / self.res
         tf = f"translate({X:.3f} {Y:.3f}) rotate({rot}) scale({s:.6f}) translate({-cx:.1f} {-cy:.1f})"

@@ -30,7 +30,7 @@ PAPER = "#FBF4E7"
 STROKE = 0.01
 RES = 1.5           # px per mm for collision maps
 WORD_GAP_MM = 1.6   # clear space between words (keeps every word readable)
-MARK_GAP_MM = 0.9   # dense harakat, as in the chosen draft
+MARK_GAP_MM = 1.4   # a little lighter than the chosen draft (client)
 
 PHRASES = [
     "رمضان كريم",
@@ -56,7 +56,10 @@ MARKS = ["َ", "ُ", "ِ", "ْ", "ّ"]
 WORD_ROTS = (0, -14, 14, -26, 26, -38, 38)
 ROT_PENALTY = {0: 0, -14: 2, 14: 2, -26: 4, 26: 4, -38: 8, 38: 8}
 
-MAX_MARKS = 1800
+MAX_MARKS = 800
+CORE_MM = float(os.environ.get("CORE_MM", "1.6"))        # thicker strokes = protected letter bodies
+CROSS_TOL = float(os.environ.get("CROSS_TOL", "0.04"))   # share of a word's ink allowed to cross
+SAME_WORD_DIST_EM = 2.6   # two copies of a word stay at least this far apart (centres)
 PADDING_IN = float(os.environ.get("PADDING_IN", "3"))   # paper edge -> content
 SEED = int(os.environ.get("SEED", "21"))
 
@@ -80,17 +83,26 @@ def place_words(bw, bh, em, n_cycles=3):
     def run(count):
         pk = Packer(font, (bw, bh), res=RES, gap_mm=WORD_GAP_MM, overlap=0.0,
                     stroke_frac=STROKE, seed=SEED, rot_penalty=ROT_PENALTY, flow=0.32)
+        # client rules: words interlace (thin strokes cross thin strokes only, letter
+        # bodies and dots never covered), and a word never repeats in the same area
+        pk.enable_interlace(core_mm=CORE_MM, cross_tol=CROSS_TOL, reward=20.0)
+        pk.same_word_r = SAME_WORD_DIST_EM * em * RES
         last = -1e9
         starts = set(ends_[:-1]) | {0}
+        prev = None
         for i in range(count):
             w = Word(words[i][0], 1.0, rotations=WORD_ROTS)
             # inside a phrase the next word must follow the previous one; a new phrase
             # may start in an earlier gap nearby, so holes get filled
             slack = 150 if i in starts else 12
-            p = pk.try_place(w, em, min_score=last - slack)
+            after = None if i in starts else prev
+            p = pk.try_place(w, em, min_score=last - slack, after=after)
             if p is None:
                 return pk, i
             last = p.score
+            g = p.geom
+            prev = (g["px"] + g["m"].shape[1] / 2, g["py"] + g["m"].shape[0] / 2,
+                    0.9 * em * RES)
         return pk, count
 
     pk, placed = run(len(words))
@@ -111,7 +123,7 @@ def make(size_name="A1", preview_only=False):
         em = bw * (0.135 + 0.006 * k)
         pk, n = place_words(bw, bh, em)
         reach = pk.lowest_ink_mm() / bh
-        score = pk.coverage() - (0.2 if reach < 0.9 else 0)
+        score = pk.coverage() - (0.2 if reach < 0.96 else 0)
         print(f"  em={em:.1f}mm words={n} coverage={pk.coverage():.2f} reach={reach:.2f}")
         if best is None or score > best[0]:
             best = (score, em)
@@ -120,8 +132,16 @@ def make(size_name="A1", preview_only=False):
     words_placed = [p for p in pk.placed]
     print(f"final em={em:.1f}mm words={n} coverage={pk.coverage():.2f}")
 
+    # extra single Ramadan words (same size, same interlace + no-repeat rules) fill pockets
+    rng_w = random.Random(SEED + 1)
+    pool = EXTRA_WORDS[:]
+    rng_w.shuffle(pool)
+    extra = [t for t in pool if pk.try_place(Word(t, 1.0, rotations=WORD_ROTS), em) is not None]
+    print(f"extra words placed={len(extra)}: {' '.join(extra)}")
+
     # straight sides: slide edge words out to the rectangle's edges
     pk.snap_to_edges(reach_mm=em * 0.9)
+    pk.rebuild_occ()
     words_placed = list(pk.placed)
 
     # harakat fill the gaps between words, inside the rectangular block only
