@@ -1,0 +1,175 @@
+"""
+Sample 07 · الحبّ · "Vermilion Love, Framed"
+Topic: love. Same method as sample 06 (framed rectangle, 3 in padding, one font, one
+size, varied directions, no nearby repeats), with the client's new direction:
+  * individual words instead of phrases, so the words are the focus
+  * stronger interlacing: thin strokes cross thin strokes; letter bodies, loops and dots
+    are never covered
+  * far fewer harakat: a light sprinkle of small marks only
+A1 portrait by default, 3 mm bleed.
+"""
+import os
+import random
+import sys
+
+HERE = os.path.dirname(os.path.abspath(__file__))
+ROOT = os.path.dirname(HERE)
+sys.path.insert(0, os.path.join(ROOT, "tools"))
+
+from calligraphy import Font, SIZES_MM, export  # noqa: E402
+from pack import Packer, Word  # noqa: E402
+
+FONT_DIR = os.environ.get("FONT_DIR", os.path.join(ROOT, "fonts"))
+font = Font(os.path.join(FONT_DIR, "Gulzar-Regular.ttf"))
+
+INK = "#BF1219"
+PAPER = "#FBF4E7"
+STROKE = 0.01
+RES = 1.5           # px per mm for collision maps
+WORD_GAP_MM = 1.6   # clear space between words (keeps every word readable)
+MARK_GAP_MM = 2.6   # light sprinkle only (client: focus on the words)
+
+# 40 classical and everyday words of love (each a complete meaning on its own)
+LOVE_WORDS = ["حبّ", "هوى", "عشق", "شوق", "غرام", "وجد", "هيام", "شغف", "صبابة", "ولع",
+              "كلف", "جوى", "لوعة", "حنين", "وله", "ودّ", "تتيّم", "اشتياق", "لهفة", "وداد",
+              "مودّة", "ألفة", "حنان", "وصال", "لقاء", "قلب", "روح", "نبض", "فؤاد", "وفاء",
+              "أمان", "دفء", "سكن", "أنس", "نجوى", "غزل", "دلال", "ميل", "سهر", "عناق"]
+_order = LOVE_WORDS[:]
+random.Random(7).shuffle(_order)
+PHRASES = _order                 # every word is its own unit
+EXTRA_WORDS = LOVE_WORDS[:]      # second pass fills pockets (never near its twin)
+# fatha, damma, kasra, sukun, shadda
+MARKS = ["َ", "ُ", "ِ", "ْ", "ّ"]
+
+# directions: straight, rising and falling diagonals, a few steep ones
+WORD_ROTS = (0, -14, 14, -26, 26, -38, 38)
+ROT_PENALTY = {0: 0, -14: 2, 14: 2, -26: 4, 26: 4, -38: 8, 38: 8}
+
+MAX_MARKS = 260
+CORE_MM = float(os.environ.get("CORE_MM", "1.6"))        # thicker strokes = protected letter bodies
+CROSS_TOL = float(os.environ.get("CROSS_TOL", "0.07"))   # share of a word's ink allowed to cross
+SAME_WORD_DIST_EM = 2.6   # two copies of a word stay at least this far apart (centres)
+PADDING_IN = float(os.environ.get("PADDING_IN", "3"))   # paper edge -> content
+SEED = int(os.environ.get("SEED", "21"))
+
+
+def place_words(bw, bh, em, n_cycles=2):
+    """Place phrase words in reading order at ONE size. Stops at the first word that
+    no longer fits, then keeps only complete phrases."""
+    words = []
+    for _ in range(n_cycles):
+        for pid, ph in enumerate(PHRASES):
+            for w in ph.split():
+                words.append((w, len(words), ph))
+    ends, n = [], 0
+    for _ in range(n_cycles):
+        for ph in PHRASES:
+            n += len(ph.split())
+            ends.append(n)
+
+    ends_ = [0] + ends
+
+    def run(count):
+        pk = Packer(font, (bw, bh), res=RES, gap_mm=WORD_GAP_MM, overlap=0.0,
+                    stroke_frac=STROKE, seed=SEED, rot_penalty=ROT_PENALTY, flow=0.32)
+        # client rules: words interlace (thin strokes cross thin strokes only, letter
+        # bodies and dots never covered), and a word never repeats in the same area
+        pk.enable_interlace(core_mm=CORE_MM, cross_tol=CROSS_TOL, reward=30.0)
+        pk.same_word_r = SAME_WORD_DIST_EM * em * RES
+        last = -1e9
+        starts = set(ends_[:-1]) | {0}
+        prev = None
+        for i in range(count):
+            w = Word(words[i][0], 1.0, rotations=WORD_ROTS)
+            # inside a phrase the next word must follow the previous one; a new phrase
+            # may start in an earlier gap nearby, so holes get filled
+            slack = 150 if i in starts else 12
+            after = None if i in starts else prev
+            p = pk.try_place(w, em, min_score=last - slack, after=after)
+            if p is None:
+                return pk, i
+            last = p.score
+            g = p.geom
+            prev = (g["px"] + g["m"].shape[1] / 2, g["py"] + g["m"].shape[0] / 2,
+                    0.9 * em * RES)
+        return pk, count
+
+    pk, placed = run(len(words))
+    complete = max([e for e in ends if e <= placed] or [0])
+    if complete != placed:
+        pk, _ = run(complete)
+    return pk, complete
+
+
+def make(size_name="A1", preview_only=False):
+    PW, PH = SIZES_MM[size_name]
+    margin = PADDING_IN * 25.4
+    bw, bh = PW - 2 * margin, PH - 2 * margin
+
+    # choose the one word size that fills the block best with complete phrases
+    best = None
+    for k in range(4):
+        em = bw * (0.135 + 0.006 * k)
+        pk, n = place_words(bw, bh, em)
+        reach = pk.lowest_ink_mm() / bh
+        score = pk.coverage() - (0.2 if reach < 0.96 else 0)
+        print(f"  em={em:.1f}mm words={n} coverage={pk.coverage():.2f} reach={reach:.2f}")
+        if best is None or score > best[0]:
+            best = (score, em)
+    em = best[1]
+    pk, n = place_words(bw, bh, em)
+    words_placed = [p for p in pk.placed]
+    print(f"final em={em:.1f}mm words={n} coverage={pk.coverage():.2f}")
+
+    # extra single Ramadan words (same size, same interlace + no-repeat rules) fill pockets
+    rng_w = random.Random(SEED + 1)
+    pool = EXTRA_WORDS[:]
+    rng_w.shuffle(pool)
+    extra = [t for t in pool if pk.try_place(Word(t, 1.0, rotations=WORD_ROTS), em) is not None]
+    print(f"extra words placed={len(extra)}: {' '.join(extra)}")
+
+    # straight sides: slide edge words out to the rectangle's edges
+    pk.snap_to_edges(reach_mm=em * 0.9)
+    pk.rebuild_occ()
+    words_placed = list(pk.placed)
+
+    # harakat fill the gaps between words, inside the rectangular block only
+    pk.gap = max(1, int(round(MARK_GAP_MM * RES)))
+    rng = random.Random(SEED)
+    misses = 0
+    for _ in range(MAX_MARKS):
+        size = rng.choice((0.36, 0.42, 0.48))
+        mark = Word(rng.choice(MARKS), size, rotations=(0, -20, 20, -40), filler=True)
+        if pk.try_place(mark, em * size) is None:
+            misses += 1
+            if misses > 400:
+                break
+    marks = pk.placed[len(words_placed):]
+    print(f"harakat placed={len(marks)} final coverage={pk.coverage():.2f}")
+
+    bleed = 3.0
+    W, H = PW + 2 * bleed, PH + 2 * bleed
+    o = bleed + margin
+    stroke = STROKE * font.upem
+    paths = [f'<path d="{p.d}" transform="translate({o:.3f} {o:.3f}) {p.transform}"/>'
+             for p in pk.placed]
+    svg = (f'<svg xmlns="http://www.w3.org/2000/svg" width="{W}mm" height="{H}mm" '
+           f'viewBox="0 0 {W} {H}">\n<title>Love · Vermilion, Framed</title>\n'
+           f'<rect width="{W}" height="{H}" fill="{PAPER}"/>\n'
+           f'<g fill="{INK}" stroke="{INK}" stroke-width="{stroke}" stroke-linejoin="round">\n'
+           + "\n".join(paths) + "\n</g>\n</svg>\n")
+
+    out_dir = os.path.join(ROOT, "output", "07-love-framed")
+    os.makedirs(out_dir, exist_ok=True)
+    stem = os.path.join(out_dir, f"love_framed_{size_name}")
+    if preview_only:
+        import cairosvg
+        cairosvg.svg2png(bytestring=svg.encode(), write_to=stem + "_draft.png", output_width=2200)
+        print("draft", stem + "_draft.png")
+    else:
+        print("png px:", export(svg, stem, (PW, PH)))
+    return stem
+
+
+if __name__ == "__main__":
+    make(os.environ.get("SIZE", "A1"), bool(os.environ.get("PREVIEW_ONLY")))
