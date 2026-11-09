@@ -116,10 +116,10 @@ def make(size_name="A1", preview_only=False):
     # choose the one word size that fills the block best with complete phrases
     best = None
     for k in range(3):
-        em = bw * (0.122 + 0.006 * k)
+        em = bw * (0.152 + 0.007 * k)
         pk, n = place_words(bw, bh, em)
         reach = pk.lowest_ink_mm() / bh
-        score = n - (100 if reach < 0.96 else 0)   # most words, block filled
+        score = em - (1000 if reach < 0.96 else 0)   # largest size that still fills the block (client: lighter)
         print(f"  em={em:.1f}mm words={n} coverage={pk.coverage():.2f} reach={reach:.2f}")
         if best is None or score > best[0]:
             best = (score, em)
