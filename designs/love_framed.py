@@ -30,10 +30,8 @@ WORD_GAP_MM = 1.6   # clear space between words (keeps every word readable)
 MARK_GAP_MM = 2.6   # light sprinkle only (client: focus on the words)
 
 # 40 classical and everyday words of love (each a complete meaning on its own)
-LOVE_WORDS = ["حبّ", "هوى", "عشق", "شوق", "غرام", "وجد", "هيام", "شغف", "صبابة", "ولع",
-              "كلف", "جوى", "لوعة", "حنين", "وله", "ودّ", "تتيّم", "اشتياق", "لهفة", "وداد",
-              "مودّة", "ألفة", "حنان", "وصال", "لقاء", "قلب", "روح", "نبض", "فؤاد", "وفاء",
-              "أمان", "دفء", "سكن", "أنس", "نجوى", "غزل", "دلال", "ميل", "سهر", "عناق"]
+LOVE_WORDS = ["غرام", "شغف", "حب", "ودّ", "اشتياق", "لهفة", "مودّة", "ألفة", "وصال",
+              "لقاء", "قلب", "روح", "أمان", "دفء", "سكن", "غزل"]   # client's selection
 _order = LOVE_WORDS[:]
 random.Random(7).shuffle(_order)
 PHRASES = _order                 # every word is its own unit
@@ -50,10 +48,12 @@ CORE_MM = float(os.environ.get("CORE_MM", "1.6"))        # thicker strokes = pro
 CROSS_TOL = float(os.environ.get("CROSS_TOL", "0.07"))   # share of a word's ink allowed to cross
 SAME_WORD_DIST_EM = 2.6   # two copies of a word stay at least this far apart (centres)
 PADDING_IN = float(os.environ.get("PADDING_IN", "3"))   # paper edge -> content
-SEED = int(os.environ.get("SEED", "21"))
+SEED = int(os.environ.get("SEED", "34"))
+# vertical ink gradient, bright red at the top to deep maroon at the bottom (reference)
+GRADIENT = [("0", "#E0222B"), ("0.45", "#B5121E"), ("1", "#6A0D1A")]
 
 
-def place_words(bw, bh, em, n_cycles=2):
+def place_words(bw, bh, em, n_cycles=7):
     """Place phrase words in reading order at ONE size. Stops at the first word that
     no longer fits, then keeps only complete phrases."""
     words = []
@@ -155,9 +155,16 @@ def make(size_name="A1", preview_only=False):
              for p in pk.placed]
     svg = (f'<svg xmlns="http://www.w3.org/2000/svg" width="{W}mm" height="{H}mm" '
            f'viewBox="0 0 {W} {H}">\n<title>Love · Vermilion, Framed</title>\n'
+           f'<defs><linearGradient id="ink" gradientUnits="userSpaceOnUse" x1="0" y1="{o}" '
+           f'x2="0" y2="{o + bh}">'
+           + "".join(f'<stop offset="{a}" stop-color="{c}"/>' for a, c in GRADIENT)
+           + '</linearGradient>'
+           # the letters are a mask, so ONE gradient runs over the whole block
+           f'<mask id="letters" maskUnits="userSpaceOnUse" x="0" y="0" width="{W}" height="{H}">'
+           f'<g fill="#fff" stroke="#fff" stroke-width="{stroke}" stroke-linejoin="round">\n'
+           + "\n".join(paths) + "\n</g></mask></defs>\n"
            f'<rect width="{W}" height="{H}" fill="{PAPER}"/>\n'
-           f'<g fill="{INK}" stroke="{INK}" stroke-width="{stroke}" stroke-linejoin="round">\n'
-           + "\n".join(paths) + "\n</g>\n</svg>\n")
+           f'<rect width="{W}" height="{H}" fill="url(#ink)" mask="url(#letters)"/>\n</svg>\n')
 
     out_dir = os.path.join(ROOT, "output", "07-love-framed")
     os.makedirs(out_dir, exist_ok=True)
