@@ -64,8 +64,9 @@ def animated(CW=1000):
     comp = lambda suf_w: 272 + max(X_SUF + suf_w, TAG_W)
     shift = lambda suf_w: round((CW - comp(suf_w)) / 2, 1)
     final = shift(W["."])
+    fixed = shift(max(W[w[2:]] for w in WORDS))   # one fixed position that fits the longest word
     times, vals = [0], [final]
-    for w, t in zip(WORDS, starts):            # glide so the logo stays centred as the word length changes
+    for w, t in zip(WORDS, starts):            # (kept for reference; logo no longer glides) as the word length changes
         times += [t - .12, t + .22]; vals += [vals[-1], shift(W[w[2:]])]
     times += [T_FINAL - .12, T_FINAL + .25]; vals += [vals[-1], final]
     dur = times[-1]
@@ -74,7 +75,7 @@ def animated(CW=1000):
     glide = f'<animateTransform attributeName="transform" type="translate" values="{kv}" keyTimes="{kt}" calcMode="spline" keySplines="{ks}" dur="{dur:.2f}s" fill="freeze"/>'
     return f'''<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {CW} 240" width="{CW*2}" height="480" role="img" aria-label="Muse &amp; Co.">
 <title>Muse &amp; Co.</title><style><![CDATA[{FONT}]]></style>
-<g transform="translate({final} 0)">{glide}
+<g transform="translate({fixed} 0)">
 <g>{inner(build("amp", True))}</g>{wordmark(True, suffixes())}
 </g>
 </svg>

@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 240" width="2000" height="480" role="img" aria-label="Muse &amp; Co.">
 <title>Muse &amp; Co.</title><style><![CDATA[@import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;1,9..144,400&family=Nunito:wght@700&display=swap');]]></style>
-<g transform="translate(150.5 0)"><animateTransform attributeName="transform" type="translate" values="150.5 0;150.5 0;139.8 0;139.8 0;75.4 0;75.4 0;34.0 0;34.0 0;14.8 0;14.8 0;150.5 0" keyTimes="0.0000;0.3050;0.3617;0.4633;0.5200;0.6217;0.6783;0.7800;0.8367;0.9383;1.0000" calcMode="spline" keySplines=".45 0 .25 1;.45 0 .25 1;.45 0 .25 1;.45 0 .25 1;.45 0 .25 1;.45 0 .25 1;.45 0 .25 1;.45 0 .25 1;.45 0 .25 1;.45 0 .25 1" dur="6.00s" fill="freeze"/>
+<g transform="translate(14.8 0)">
 <g><title>Muse &amp; Make</title><defs><clipPath id="c"><circle cx="120" cy="120" r="116"/></clipPath></defs>
 <g transform="translate(120 120)"><g><animateTransform attributeName="transform" type="scale" values="0;1.08;.97;1" keyTimes="0;.6;.85;1" dur=".45s" fill="freeze"/><g transform="translate(-120 -120)"><g clip-path="url(#c)">
   <circle cx="120" cy="120" r="116" fill="#F6DCD3"/>
