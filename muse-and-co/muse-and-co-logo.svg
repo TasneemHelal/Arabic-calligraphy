@@ -1,6 +1,5 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 740 240" width="1480" height="480" role="img" aria-label="Muse &amp; Co.">
-<title>Muse &amp; Co.</title>
-<style><![CDATA[@import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;1,9..144,400&family=Nunito:wght@700&display=swap');]]></style>
+<title>Muse &amp; Co.</title><style><![CDATA[@import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;1,9..144,400&family=Nunito:wght@700&display=swap');]]></style>
 <g><title>Muse &amp; Make</title><defs><clipPath id="c"><circle cx="120" cy="120" r="116"/></clipPath></defs>
 <g transform="translate(120 120)"><g><g transform="translate(-120 -120)"><g clip-path="url(#c)">
   <circle cx="120" cy="120" r="116" fill="#F6DCD3"/>
@@ -9,13 +8,13 @@
     <g opacity="1"><g transform="translate(66.1 147.6)"><g><g transform="translate(-66.1 -147.6)"><path d="M 36.0 146.0 C 36.8 130.0 39.2 115.6 44.0 107.6 C 48.0 101.2 52.0 108.4 54.4 118.0 C 56.4 126.0 58.4 128.4 60.0 122.0 C 62.4 112.4 65.6 102.8 71.2 102.0 C 77.6 101.2 79.2 118.8 80.0 133.2 C 80.4 142.0 82.4 147.6 88.0 146.0 C 92.0 144.8 94.4 140.4 96.0 136.4" fill="none" stroke="#3D2C3E" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"></path></g></g></g><g transform="translate(118.4 146.7)"><g><g transform="translate(-118.4 -146.7)"><path d="M 130.36 145.98 L 113.34 123.04 C 107.42 114.16 111.12 106.02 117.78 106.02 C 124.44 106.02 126.66 112.68 121.48 119.34 L 110.38 131.92 C 104.46 139.32 108.16 146.72 116.3 146.72 C 123.7 146.72 128.14 140.8 131.84 133.4" fill="none" stroke="#E9806E" stroke-width="7.4" stroke-linecap="round" stroke-linejoin="round"></path></g></g></g><g transform="translate(182.6 152.0)"><g><g transform="translate(-182.6 -152.0)"><path d="M 177.0 109.0 C 168.0 99.0 146.0 101.0 144.0 124.0 C 142.0 145.0 160.0 152.0 173.0 141.0 C 177.0 137.0 180.0 129.0 189.0 127.0 C 199.0 125.0 204.0 135.0 200.0 142.0 C 196.0 149.0 184.0 149.0 183.0 140.0 C 182.0 131.0 192.0 127.0 200.0 130.0 C 204.0 131.0 207.0 129.0 210.0 126.0" fill="none" stroke="#3D2C3E" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"></path></g></g></g></g>
   </g>
   <g transform="translate(178 70) scale(0.75)"><path opacity="1" fill="#EDB94F" d="M0 -10 C 1.5 -3, 3 -1.5, 10 0 C 3 1.5, 1.5 3, 0 10 C -1.5 3, -3 1.5, -10 0 C -3 -1.5, -1.5 -3, 0 -10 Z"></path></g><g transform="translate(58 150) scale(0.5)"><path opacity="1" fill="#EDB94F" d="M0 -10 C 1.5 -3, 3 -1.5, 10 0 C 3 1.5, 1.5 3, 0 10 C -1.5 3, -3 1.5, -10 0 C -3 -1.5, -1.5 -3, 0 -10 Z"></path></g><g transform="translate(176 176) scale(0.4)"><path opacity="1" fill="#EDB94F" d="M0 -10 C 1.5 -3, 3 -1.5, 10 0 C 3 1.5, 1.5 3, 0 10 C -1.5 3, -3 1.5, -10 0 C -3 -1.5, -1.5 -3, 0 -10 Z"></path></g>
-</g></g></g></g></g>
-<g transform="translate(272 0)">
-  <g><text x="0" y="122" font-family="Fraunces, Georgia, serif" font-weight="500" font-size="80" fill="#3D2C3E" letter-spacing="-1">Muse</text></g>
-  <g><text x="194" y="124" font-family="Fraunces, Georgia, serif" font-style="italic" font-size="86" fill="#E9806E">&amp;</text></g>
-  <g><text x="254" y="122" font-family="Fraunces, Georgia, serif" font-weight="500" font-size="80" fill="#3D2C3E" letter-spacing="-1">Co.</text></g>
-  <rect x="2" y="144" width="420" height="3" rx="1.5" fill="#97B694"></rect>
-  <g><text x="2" y="178" font-family="Nunito, Arial, sans-serif" font-weight="700" font-size="17.5" letter-spacing=".6" fill="#3D2C3E"><tspan fill="#E9806E">Co</tspan><tspan>lors</tspan><tspan fill="#97B694" dx="2"> · </tspan><tspan fill="#E9806E">Co</tspan><tspan>urses</tspan><tspan fill="#97B694" dx="2"> · </tspan><tspan fill="#E9806E">Co</tspan><tspan>llections</tspan><tspan fill="#97B694" dx="2"> · </tspan><tspan fill="#E9806E">Co</tspan><tspan>llaborations</tspan></text></g>
+</g></g></g></g></g><g transform="translate(272 0)">
+  <g><text x="0" y="122" font-family="Fraunces, Georgia, serif" font-weight="500" font-size="72" letter-spacing="-1" fill="#3D2C3E">Muse</text></g>
+  <g><text x="180" y="124" font-family="Fraunces, Georgia, serif" font-style="italic" font-size="78" fill="#E9806E">&amp;</text></g>
+  <g><text x="246" y="122" font-family="Fraunces, Georgia, serif" font-weight="500" font-size="72" letter-spacing="-1" fill="#3D2C3E">Co</text></g>
+  <text x="331.5" y="122" font-family="Fraunces, Georgia, serif" font-weight="500" font-size="72" letter-spacing="-1" fill="#3D2C3E">.</text>
+  <rect x="2" y="144" width="427" height="3" rx="1.5" fill="#97B694"></rect>
+  <g><text x="2" y="178" font-family="Nunito, Arial, sans-serif" font-weight="700" font-size="17" letter-spacing=".6" fill="#3D2C3E"><tspan fill="#E9806E">Co</tspan><tspan>lors</tspan><tspan fill="#97B694"> · </tspan><tspan fill="#E9806E">Co</tspan><tspan>llectives</tspan><tspan fill="#97B694"> · </tspan><tspan fill="#E9806E">Co</tspan><tspan>mmunities</tspan><tspan fill="#97B694"> · </tspan><tspan fill="#E9806E">Co</tspan><tspan>llaborations</tspan></text></g>
   <g><text x="2" y="206" font-family="Nunito, Arial, sans-serif" font-weight="700" font-size="16" letter-spacing="1.5" fill="#E9806E">museandco.art</text></g>
 </g>
 </svg>
