@@ -52,60 +52,46 @@ def reel():
                  f'<g>{pulse(bt(8), 20, 1.1)}<circle r="{r}" fill="{C[c]}" opacity=".18"/></g></g></g>')
 
     scene = []
+    BADGE_Y = 960                       # badge sits in the middle of the screen
     # ---- DROP: badge slams in, brush morphs (emblem timeline shifted so the morph lands on beat 10)
     off = bt(10) - 1.12
-    scene.append(f'<g transform="translate(540 470)"><g opacity="0">{show(bt(8))}{slam(bt(8), 1.35, .4)}'
-                 f'<g transform="translate(-276 -276) scale(2.3)">{emblem_at(off)}</g></g></g>')
-    scene.append(confetti(540, 470, bt(8) + .02, 22, (330, 650), 1))
+    scene.append(f'<g transform="translate(540 {BADGE_Y})"><g opacity="0">{show(bt(8))}{slam(bt(8), 1.35, .4)}'
+                 f'<g transform="translate(-228 -228) scale(1.9)">{emblem_at(off)}</g></g></g>')
+    scene.append(confetti(540, BADGE_Y, bt(8) + .02, 22, (330, 650), 1))
 
-    # ---- "Muse &" + Co words snapping in on each kick, then lockup
-    scene.append(at(540, 905, f'<text text-anchor="middle" {Q6} font-size="108" fill="{C["ink"]}">Muse <tspan fill="{C["coral"]}">&amp;</tspan></text>',
-                    show(bt(12)) + slam(bt(12), 1.6) + hide(bt(17))))
-    for i, w in enumerate(["Colors", "Collectives", "Communities", "Collaborations"]):
-        t = bt(13 + i)
-        scene.append(at(540, 1030, f'<text text-anchor="middle" {Q6} font-size="104" fill="{C["ink"]}">Co<tspan fill="{C["coral"]}">{w[2:]}</tspan></text>',
-                        show(t) + slam(t, 1.5, .25, -5 if i % 2 else 5) + hide(t + B)))
-    scene.append(at(540, 985, f'<text text-anchor="middle" {Q6} font-size="116" fill="{C["ink"]}">Muse <tspan fill="{C["coral"]}">&amp;</tspan> Co.</text>',
-                    show(bt(17)) + slam(bt(17), 1.7, .35)))
-    scene.append(at(540, 1090, f'<text text-anchor="middle" {NU} font-size="46" fill="{C["ink"]}" fill-opacity=".75">something creative is…</text>',
-                    show(bt(18)) + slam(bt(18), 1.3, .3)))
+    # ---- "Muse & Co." above the badge (beat 12)
+    scene.append(at(540, 600, f'<text text-anchor="middle" {Q6} font-size="116" fill="{C["ink"]}">Muse <tspan fill="{C["coral"]}">&amp;</tspan> Co.</text>',
+                    show(bt(12)) + slam(bt(12), 1.7, .35)))
 
-    # ---- IMPACT (beat 20): COMING SOON + flash + shake + confetti, then pulses on the beat
-    cs = []
-    for j, (word, col, y) in enumerate([("COMING", C["ink"], 1295), ("SOON", C["coral"], 1450)]):
-        cs.append(at(540, y - 55, f'<g>{pulse(bt(22), 6, 1.05)}<text y="55" text-anchor="middle" {Q7} font-size="{168 if j == 0 else 190}" letter-spacing="6" fill="{col}">{word}</text></g>',
-                     show(bt(20) + j * .1) + slam(bt(20) + j * .1, 2.2, .38, -6 if j == 0 else 6)))
-    scene += cs
-    scene.append(f'<path d="M 330 1492 C 430 1467, 640 1463, 752 1479" pathLength="1" fill="none" stroke="{C["mustard"]}" stroke-width="18" stroke-linecap="round" '
+    # ---- COMING SOON below the badge (beat 20), pulses on the beat
+    for j, (word, col, y) in enumerate([("COMING", C["ink"], 1325), ("SOON", C["coral"], 1462)]):
+        scene.append(at(540, y - 50, f'<g>{pulse(bt(22), 6, 1.05)}<text y="50" text-anchor="middle" {Q7} font-size="{136 if j == 0 else 156}" letter-spacing="6" fill="{col}">{word}</text></g>',
+                        show(bt(20) + j * .1) + slam(bt(20) + j * .1, 2.0, .38, -5 if j == 0 else 5)))
+    scene.append(f'<path d="M 360 1500 C 450 1478, 630 1474, 724 1488" pathLength="1" fill="none" stroke="{C["mustard"]}" stroke-width="16" stroke-linecap="round" '
                  f'stroke-dasharray="1 1" stroke-dashoffset="1" opacity="0">{show(bt(21))}<animate attributeName="stroke-dashoffset" from="1" to="0" begin="{bt(21):.3f}s" dur=".3s" fill="freeze"/></path>')
-    scene.append(confetti(540, 1330, bt(20) + .03, 34, (380, 760), 2))
-    for k, (x, y, s) in enumerate([(190, 1230, 2.6), (890, 1370, 2.0), (220, 1470, 1.5), (870, 1200, 1.4)]):
+    scene.append(confetti(540, 1390, bt(20) + .03, 30, (360, 700), 2))
+    for k, (x, y, s) in enumerate([(200, 1290, 2.2), (880, 1420, 1.8), (230, 1480, 1.3), (870, 1260, 1.3)]):
         scene.append(f'<g transform="translate({x} {y}) scale({s})"><path d="{SP}" fill="{C["mustard"]}" opacity="0">'
                      f'<animate attributeName="opacity" values="0;1;0" dur="{2*B:.4f}s" begin="{bt(21)+k*B/2:.3f}s" repeatCount="indefinite"/>'
                      f'<animateTransform attributeName="transform" type="rotate" values="0;90" dur="{2*B:.4f}s" begin="{bt(21)+k*B/2:.3f}s" repeatCount="indefinite"/></path></g>')
 
     # ---- domain pill (beat 24) + final hit confetti (beat 28)
-    scene.append(at(540, 1598, f'<g>{pulse(bt(28), 1, 1.12)}<rect x="-215" y="-42" width="430" height="84" rx="42" fill="{C["coral"]}"/>'
-                    f'<text y="15" text-anchor="middle" {NU} font-size="42" fill="{C["bg"]}" letter-spacing="1">museandco.art</text></g>',
+    scene.append(at(540, 1585, f'<g>{pulse(bt(28), 1, 1.12)}<rect x="-205" y="-40" width="410" height="80" rx="40" fill="{C["coral"]}"/>'
+                    f'<text y="14" text-anchor="middle" {NU} font-size="40" fill="{C["bg"]}" letter-spacing="1">museandco.art</text></g>',
                     show(bt(24)) + slam(bt(24), 0, .4)))
-    scene.append(confetti(540, 1598, bt(28) + .02, 24, (300, 620), 3))
+    scene.append(confetti(540, BADGE_Y, bt(28) + .02, 24, (300, 620), 3))
 
-    o.append(f'<g>{shake(bt(8), 10)}{shake(bt(20), 18)}{shake(bt(28), 8)}{"".join(scene)}</g>')
-    # coral flash on the impact
-    o.append(f'<rect width="1080" height="1920" fill="{C["coral"]}" opacity="0"><animate attributeName="opacity" values=".85;0" begin="{bt(20):.3f}s" dur=".35s"/></rect>')
+    o.append(f'<g>{shake(bt(8), 10)}{shake(bt(20), 14)}{shake(bt(28), 8)}{"".join(scene)}</g>')
+    o.append(f'<rect width="1080" height="1920" fill="{C["coral"]}" opacity="0"><animate attributeName="opacity" values=".6;0" begin="{bt(20):.3f}s" dur=".3s"/></rect>')
     o.append(f'<rect width="1080" height="1920" fill="#fff" opacity="0"><animate attributeName="opacity" values=".9;0" begin="{bt(8):.3f}s" dur=".3s"/></rect>')
 
-    # ---- INTRO (beats 0-7): colour bursts + big words, zoom on the riser, cut to cream before the drop
+    # ---- INTRO (beats 0-7): logo-style rotating words on each hit, in the middle of the screen
     intro = []
-    words = [("Paint!", C["coral"], C["bg"], -7), ("Draw!", C["sage"], C["ink"], 6), ("Color!", C["mustard"], C["ink"], -5), ("Create!", C["lav"], C["ink"], 4)]
-    for i, (w, bg, fg, rot) in enumerate(words):
+    for i, w in enumerate(["Colors", "Collectives", "Communities", "Collaborations"]):
         t = bt(2 * i)
-        intro.append(f'<circle cx="540" cy="960" r="0" fill="{bg}"><animate attributeName="r" values="0;1150" begin="{t:.3f}s" dur=".24s" calcMode="spline" keyTimes="0;1" keySplines=".3 .7 .3 1" fill="freeze"/></circle>')
-        dots = "".join(f'<circle cx="{random.randint(-380, 380)}" cy="{random.choice([-1, 1]) * random.randint(170, 330)}" r="{random.randint(14, 30)}" fill="{c}"/>'
-                       for c in random.sample([p for p in PAL if p != bg], 3))
-        zoom = (f'<animateTransform attributeName="transform" type="scale" values="1;1.3" begin="{bt(6.4):.3f}s" dur="{bt(7.5)-bt(6.4):.3f}s" fill="freeze" additive="sum"/>' if i == 3 else "")
-        intro.append(at(540, 960, f'<g>{zoom}<g>{dots}</g><text y="70" text-anchor="middle" {Q7} font-size="220" fill="{fg}">{w}</text></g>',
-                        show(t) + slam(t, 2.4, .34, rot)))
+        zoom = (f'<animateTransform attributeName="transform" type="scale" values="1;1.12" begin="{bt(6.4):.3f}s" dur="{bt(7.5)-bt(6.4):.3f}s" fill="freeze" additive="sum"/>' if i == 3 else "")
+        intro.append(at(540, 960, f'<g>{zoom}<text y="30" text-anchor="middle" {Q6} font-size="88" fill="{C["ink"]}">Muse <tspan fill="{C["coral"]}">&amp;</tspan> Co<tspan fill="{C["coral"]}">{w[2:]}</tspan></text></g>',
+                        show(t) + slam(t, 1.5, .3) + (hide(bt(2 * i + 2)) if i < 3 else "")))
     o.append(f'<g>{hide(bt(7.5))}{"".join(intro)}</g>')
 
     return (f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1080 1920" width="1080" height="1920">'

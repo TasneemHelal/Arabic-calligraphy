@@ -94,8 +94,6 @@ for b in range(8, 28):
 for b in np.arange(8, 28, .5):                     # off-beat bass
     ch = PROG[(int(b - 8) // 4) % 4]
     add(bass(ROOT[ch] + (12 if (b * 2) % 4 == 3 else 0), .2), bt(b + .25), .55)
-# big impact for "COMING SOON" at beat 20
-add(boom(), bt(20), .8); add(crash(3), bt(20), .28); add(noise_sweep(bt(2), 400, 8000), bt(18), .25)
 
 # ---- OUTRO (beats 28-31): final chord + crash, sparkle arpeggio
 add(kick(), bt(28), 1.0); add(crash(3.5), bt(28), .28); add(boom(), bt(28), .5)
@@ -106,8 +104,6 @@ for k, m in enumerate([84, 88, 91, 96, 91, 96, 100]): add(pluck(m, .5), bt(28.5)
 # ---- SFX on animation cues
 add(noise_sweep(.55, 800, 6000, up=False), 3.62, .35, -.3)                  # brush whoosh
 for k, m in enumerate([84, 88, 91, 96]): add(pluck(m, .35), 4.78 + k * .06, .2, .4 - k * .25)   # paint splash
-for k, b in enumerate([13, 14, 15, 16, 17]): add(pluck(72 + [0, 2, 4, 7, 12][k], .25), bt(b), .28, .15)  # word pops
-for k in range(10): add(pluck(96 + (k % 5) * 2, .3), bt(20) + .05 + k * .045, .1, -.8 + k * .17)       # confetti shimmer
 
 # apply sidechain to everything except a bit of the kick/clap transient (simple approach: gentle global pump)
 mix *= (.55 + .45 * duck)[:, None]
