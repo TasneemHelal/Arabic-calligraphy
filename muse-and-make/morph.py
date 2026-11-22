@@ -92,6 +92,6 @@ def build(mid, anim):
     return (f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 240" width="480" height="480" role="img" aria-label="Muse &amp; Make">'
             f'<title>Muse &amp; Make</title>{body}</svg>\n')
 
-for mid, name in [("amp", "muse-and-make-morph"), ("n", "muse-and-make-morph-n")]:
+for mid, name in [("amp", "muse-and-make-morph")]:
     open(f"{name}.svg", "w").write(build(mid, False)); open(f"{name}-animated.svg", "w").write(build(mid, True))
 print("morph ok")

@@ -119,7 +119,7 @@ def build(mid, anim):
     return (f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 240" width="480" height="480" role="img" aria-label="Muse &amp; Make">'
             f'<title>Muse &amp; Make</title>{body}</svg>\n'), END
 
-for mid, name in [("amp", "muse-and-make-brush"), ("n", "muse-and-make-brush-n")]:
+for mid, name in [("amp", "muse-and-make-brush")]:
     s, end_t = build(mid, False); open(f"{name}.svg", "w").write(s)
     s, end_t = build(mid, True); open(f"{name}-animated.svg", "w").write(s)
 print("ok", round(end_t, 2))

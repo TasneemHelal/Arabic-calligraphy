@@ -46,7 +46,7 @@ CSS = '''
 @media (prefers-reduced-motion:reduce){*{animation-duration:.01s!important;animation-delay:0s!important;animation-iteration-count:1!important}}
 '''
 
-for mid, name in [("amp", "muse-and-make-monogram"), ("n", "muse-and-make-monogram-n")]:
+for mid, name in [("amp", "muse-and-make-monogram")]:
     open(f"{name}.svg", "w").write(svg(240, mono(mid, False)))
     open(f"{name}-animated.svg", "w").write(svg(240, mono(mid, True), CSS))
 print("ok")
