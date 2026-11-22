@@ -23,7 +23,7 @@ def wide(anim):
   <g{o}>{rise(1.4)}<text x="194" y="124" {f} font-style="italic" font-size="86" fill="{C["coral"]}">&amp;</text></g>
   <g{o}>{rise(1.55)}<text x="254" y="122" {f} font-weight="500" font-size="80" fill="{C["ink"]}" letter-spacing="-1">Co.</text></g>
   <rect x="2" y="144" width="{0 if anim else 420}" height="3" rx="1.5" fill="{C["sage"]}">{rule}</rect>
-  <g{o}>{rise(1.95)}<text x="2" y="178" font-family="Nunito, Arial, sans-serif" font-weight="700" font-size="17" letter-spacing="3.4" fill="{C["ink"]}" fill-opacity=".75">ART · WORKSHOPS · GIFTS · GALLERY</text></g>
+  <g{o}>{rise(1.95)}<text x="2" y="178" font-family="Nunito, Arial, sans-serif" font-weight="700" font-size="17.5" letter-spacing=".6" fill="{C["ink"]}"><tspan fill="{C["coral"]}">Co</tspan><tspan>lors</tspan><tspan fill="{C["sage"]}" dx="2"> · </tspan><tspan fill="{C["coral"]}">Co</tspan><tspan>urses</tspan><tspan fill="{C["sage"]}" dx="2"> · </tspan><tspan fill="{C["coral"]}">Co</tspan><tspan>llections</tspan><tspan fill="{C["sage"]}" dx="2"> · </tspan><tspan fill="{C["coral"]}">Co</tspan><tspan>llaborations</tspan></text></g>
   <g{o}>{rise(2.1)}<text x="2" y="206" font-family="Nunito, Arial, sans-serif" font-weight="700" font-size="16" letter-spacing="1.5" fill="{C["coral"]}">museandco.art</text></g>
 </g>
 </svg>

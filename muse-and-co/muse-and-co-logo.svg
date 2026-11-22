@@ -15,7 +15,7 @@
   <g><text x="194" y="124" font-family="Fraunces, Georgia, serif" font-style="italic" font-size="86" fill="#E9806E">&amp;</text></g>
   <g><text x="254" y="122" font-family="Fraunces, Georgia, serif" font-weight="500" font-size="80" fill="#3D2C3E" letter-spacing="-1">Co.</text></g>
   <rect x="2" y="144" width="420" height="3" rx="1.5" fill="#97B694"></rect>
-  <g><text x="2" y="178" font-family="Nunito, Arial, sans-serif" font-weight="700" font-size="17" letter-spacing="3.4" fill="#3D2C3E" fill-opacity=".75">ART · WORKSHOPS · GIFTS · GALLERY</text></g>
+  <g><text x="2" y="178" font-family="Nunito, Arial, sans-serif" font-weight="700" font-size="17.5" letter-spacing=".6" fill="#3D2C3E"><tspan fill="#E9806E">Co</tspan><tspan>lors</tspan><tspan fill="#97B694" dx="2"> · </tspan><tspan fill="#E9806E">Co</tspan><tspan>urses</tspan><tspan fill="#97B694" dx="2"> · </tspan><tspan fill="#E9806E">Co</tspan><tspan>llections</tspan><tspan fill="#97B694" dx="2"> · </tspan><tspan fill="#E9806E">Co</tspan><tspan>llaborations</tspan></text></g>
   <g><text x="2" y="206" font-family="Nunito, Arial, sans-serif" font-weight="700" font-size="16" letter-spacing="1.5" fill="#E9806E">museandco.art</text></g>
 </g>
 </svg>
