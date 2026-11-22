@@ -23,23 +23,26 @@ def mono(mid, anim):
 </g>'''
 
 CSS = '''
-.s1,.s2,.s3{stroke-dasharray:1 1;stroke-dashoffset:1;opacity:0}
-.s1{animation:show 0s .6s both,draw 1.1s .6s cubic-bezier(.6,0,.3,1) both}
-.s2{animation:show 0s 1.8s both,draw .8s 1.8s cubic-bezier(.6,0,.3,1) both}
-.s3{animation:show 0s 2.7s both,draw 1.1s 2.7s cubic-bezier(.6,0,.3,1) both}
-.blob{transform-origin:120px 120px;transform:scale(0);animation:pop .7s cubic-bezier(.3,1.5,.6,1) both}
-.thumb{transform-box:fill-box;transform-origin:center;animation:pop .4s .4s cubic-bezier(.3,1.5,.6,1) both}
-.dot{transform-box:fill-box;transform-origin:center;animation:drop .6s cubic-bezier(.3,1.6,.5,1) both}
-.d0{animation-delay:3.7s}.d1{animation-delay:3.85s}.d2{animation-delay:4s}.d3{animation-delay:4.15s}
-.sp1,.sp2{transform-box:fill-box;transform-origin:center;opacity:0;animation:twinkle 2.4s 4.3s ease-in-out infinite}
-.sp2{animation-delay:5.1s}
-.icon{transform-origin:120px 120px;animation:breathe 4s 4.8s ease-in-out infinite}
+.s1,.s2,.s3{stroke-dasharray:1 1;stroke-dashoffset:1;opacity:0;transform-box:fill-box;transform-origin:50% 100%}
+.s1{animation:show 0s .3s both,draw .38s .3s cubic-bezier(.5,0,.2,1) both,boing .45s .68s cubic-bezier(.3,1.8,.5,1)}
+.s2{animation:show 0s .62s both,draw .26s .62s cubic-bezier(.5,0,.2,1) both,boing .45s .88s cubic-bezier(.3,1.8,.5,1)}
+.s3{animation:show 0s .84s both,draw .38s .84s cubic-bezier(.5,0,.2,1) both,boing .45s 1.22s cubic-bezier(.3,1.8,.5,1)}
+.blob{transform-origin:120px 120px;animation:spinpop .5s cubic-bezier(.3,1.6,.5,1) both}
+.thumb{transform-box:fill-box;transform-origin:center;animation:pop .3s .25s cubic-bezier(.3,1.8,.5,1) both}
+.dot{transform-box:fill-box;transform-origin:center;animation:drop .38s cubic-bezier(.3,1.9,.5,1) both}
+.d0{animation-delay:1.25s}.d1{animation-delay:1.32s}.d2{animation-delay:1.39s}.d3{animation-delay:1.46s}
+.sp1,.sp2{transform-box:fill-box;transform-origin:center;opacity:0;animation:twinkle 1.4s 1.5s ease-in-out infinite}
+.sp2{animation-delay:1.9s}
+.icon{transform-origin:120px 200px;animation:jump .55s 1.55s cubic-bezier(.3,1.5,.5,1),wiggle 2.2s 2.2s ease-in-out infinite}
 @keyframes show{to{opacity:1}}
 @keyframes draw{to{stroke-dashoffset:0}}
 @keyframes pop{from{transform:scale(0)}to{transform:scale(1)}}
-@keyframes drop{from{transform:scale(0) translateY(-30px)}to{transform:scale(1) translateY(0)}}
-@keyframes twinkle{0%,100%{opacity:0;transform:scale(.4) rotate(0)}40%,60%{opacity:1;transform:scale(1) rotate(45deg)}}
-@keyframes breathe{0%,100%{transform:rotate(0)}50%{transform:rotate(-2deg)}}
+@keyframes spinpop{from{transform:scale(0) rotate(-35deg)}to{transform:scale(1) rotate(0)}}
+@keyframes boing{0%{transform:none}30%{transform:scale(1.18,.82)}60%{transform:scale(.92,1.12) translateY(-4px)}100%{transform:none}}
+@keyframes drop{from{transform:scale(0) translateY(-40px)}to{transform:scale(1) translateY(0)}}
+@keyframes jump{0%,100%{transform:none}40%{transform:translateY(-8px) scale(1.04,.97)}}
+@keyframes twinkle{0%,100%{opacity:0;transform:scale(.3) rotate(0)}40%,60%{opacity:1;transform:scale(1.15) rotate(90deg)}}
+@keyframes wiggle{0%,100%{transform:rotate(0)}25%{transform:rotate(-3deg)}75%{transform:rotate(3deg)}}
 @media (prefers-reduced-motion:reduce){*{animation-duration:.01s!important;animation-delay:0s!important;animation-iteration-count:1!important}}
 '''
 
