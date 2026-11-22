@@ -22,18 +22,20 @@ def straight(segs, f0, f1):
 
 def build(mid, anim):
     parts = [(M1, C["ink"], 10, 8), (MIDS[mid], C["coral"], 13, 7.4), (M2, C["ink"], 7, 8)]
-    T_IN, T_M = .3, 1.05                                   # brush lands, morph starts
+    T_IN, T_M = .3, 1.12                                   # brush lands, morph starts
     ang = math.degrees(math.atan2(RB[1]-LA[1], RB[0]-LA[0]))
     out = []
     for i, ((segs, col, w0, w1), f0, f1) in enumerate(zip(parts, SPLIT, SPLIT[1:])):
         b = T_M + i * .08
-        st, fin = to_d(straight(segs, f0, f1)), to_d(segs)
+        sseg = straight(segs, f0, f1)
+        st, fin = to_d(sseg), to_d(segs)
+        over = to_d([(c, [(round(x + .14*(x-sx), 2), round(y + .14*(y-sy), 2)) for (x, y), (sx, sy) in zip(p, sp)]) for (c, p), (_, sp) in zip(segs, sseg)])
         cx = round(sum(x for _, p in segs for x, _ in p) / sum(len(p) for _, p in segs), 1)
         by = round(max(y for _, p in segs for _, y in p), 1)
         if anim:
-            a = (f'<animate attributeName="d" values="{st};{fin}" begin="{b:.2f}s" dur=".5s" calcMode="spline" keySplines=".7 0 .2 1" fill="freeze"/>'
+            a = (f'<animate attributeName="d" values="{st};{over};{fin}" keyTimes="0;.6;1" begin="{b:.2f}s" dur=".55s" calcMode="spline" keySplines=".65 0 .35 1;.4 0 .3 1" fill="freeze"/>'
                  f'<animate attributeName="stroke-width" values="{w0};{w1}" begin="{b:.2f}s" dur=".4s" fill="freeze"/>')
-            boing = f'<animateTransform attributeName="transform" type="scale" values="1 1;1.16 .84;.94 1.1;1 1" keyTimes="0;.3;.65;1" begin="{b+.5:.2f}s" dur=".4s"/>'
+            boing = f'<animateTransform attributeName="transform" type="scale" values="1 1;1.16 .84;.94 1.1;1 1" keyTimes="0;.3;.65;1" begin="{b+.55:.2f}s" dur=".4s"/>'
         else: a = boing = ""
         out.append(f'<g transform="translate({cx} {by})"><g>{boing}<g transform="translate({-cx} {-by})">'
                    f'<path d="{st if anim else fin}" fill="none" stroke="{col}" stroke-width="{w0 if anim else w1}" stroke-linecap="round" stroke-linejoin="round">{a}</path></g></g></g>')
@@ -48,13 +50,19 @@ def build(mid, anim):
     <g fill="{C["mustard"]}">{"".join(f'<circle cx="{lerp(f)[0]}" cy="{lerp(f)[1]}" r="1.8">{fade(.12)}</circle>' for f in (.535, .565, .595))}</g>'''
     if not anim: details = ""
 
-    END = T_M + .16 + .5
+    END = T_M + .16 + .55
     dots = [(90, 70, 6.5, "coral"), (110, 62, 5.5, "mustard"), (130, 62, 6, "sage"), (150, 70, 5, "lav")]
     dot_svg = ""
+    srcs = [lerp(.565), lerp(.8), lerp(.88), lerp(.93)]
     for i, (x, y, r, c) in enumerate(dots):
-        an = (f'<animateTransform attributeName="transform" type="translate" values="0 -26;0 3;0 0" keyTimes="0;.7;1" begin="{END+i*.07:.2f}s" dur=".35s" fill="freeze"/>'
-              f'<set attributeName="opacity" to="1" begin="{END+i*.07:.2f}s" fill="freeze"/>') if anim else ""
+        b = T_M + .12 + i * .06
+        sx, sy = srcs[i][0] - x, srcs[i][1] - y
+        an = (f'<animateMotion path="M {sx:.1f} {sy:.1f} Q {sx*.4:.1f} {min(sy, 0)-34:.1f} 0 0" begin="{b:.2f}s" dur=".5s" calcMode="spline" keyTimes="0;1" keySplines=".2 .7 .3 1" fill="freeze"/>'
+              f'<animate attributeName="r" values="1.5;{r*1.35:.1f};{r}" keyTimes="0;.75;1" begin="{b:.2f}s" dur=".5s" fill="freeze"/>'
+              f'<set attributeName="opacity" to="1" begin="{b:.2f}s" fill="freeze"/>') if anim else ""
         dot_svg += f'<circle cx="{x}" cy="{y}" r="{r}" fill="{C[c]}" opacity="{0 if anim else 1}">{an}</circle>'
+    hole_an = f'<animate attributeName="r" values="0;12.5;9;10" keyTimes="0;.5;.8;1" begin="{END-.05:.2f}s" dur=".4s" fill="freeze"/>' if anim else ""
+    hole = f'<circle cx="120" cy="196" r="{0 if anim else 10}" fill="{C["bg"]}">{hole_an}</circle>'
 
     def spark(x, y, s, beg):
         an = (f'<animate attributeName="opacity" values="0;1;0" dur="1.4s" begin="{beg:.2f}s" repeatCount="indefinite"/>'
@@ -63,9 +71,10 @@ def build(mid, anim):
                 f'd="M0 -10 C 1.5 -3, 3 -1.5, 10 0 C 3 1.5, 1.5 3, 0 10 C -1.5 3, -3 1.5, -10 0 C -3 -1.5, -1.5 -3, 0 -10 Z">{an}</path></g>')
 
     if anim:   # brush tosses in, lands with a bounce, does a quick "flourish" shake, then bends into letters
-        enter = (f'<animateTransform attributeName="transform" type="translate" values="40 -150;0 6;0 -3;0 0" keyTimes="0;.6;.85;1" begin="{T_IN-.05:.2f}s" dur=".5s" fill="freeze"/>'
-                 f'<animateTransform attributeName="transform" type="rotate" values="-50 120 120;4 120 120;-2 120 120;0 120 120" keyTimes="0;.6;.85;1" begin="{T_IN-.05:.2f}s" dur=".5s" fill="freeze" additive="sum"/>'
-                 f'<animateTransform attributeName="transform" type="rotate" values="0 120 120;-5 120 120;4 120 120;0 120 120" begin="{T_M-.25:.2f}s" dur=".25s" additive="sum"/>'
+        enter = (f'<animateTransform attributeName="transform" type="translate" values="-170 110;8 -8;-3 2;0 0" keyTimes="0;.55;.8;1" begin="{T_IN-.05:.2f}s" dur=".55s" calcMode="spline" keySplines=".2 .8 .3 1;.4 0 .6 1;.4 0 .6 1" fill="freeze"/>'
+                 f'<animateTransform attributeName="transform" type="rotate" values="-220 120 120;10 120 120;-4 120 120;0 120 120" keyTimes="0;.55;.8;1" begin="{T_IN-.05:.2f}s" dur=".55s" calcMode="spline" keySplines=".2 .8 .3 1;.4 0 .6 1;.4 0 .6 1" fill="freeze" additive="sum"/>'
+                 f'<animateTransform attributeName="transform" type="translate" values="0 0;-12 4;0 0" keyTimes="0;.7;1" begin="{T_M-.22:.2f}s" dur=".26s" additive="sum"/>'
+                 f'<animateTransform attributeName="transform" type="rotate" values="0 120 120;-6 120 120;0 120 120" keyTimes="0;.7;1" begin="{T_M-.22:.2f}s" dur=".26s" additive="sum"/>'
                  f'<set attributeName="opacity" to="1" begin="{T_IN-.05:.2f}s" fill="freeze"/>')
         jump = f'<animateTransform attributeName="transform" type="translate" values="0 0;0 -5;0 0" keyTimes="0;.4;1" begin="{END+.3:.2f}s" dur=".4s"/>'
         pop = f'<animateTransform attributeName="transform" type="scale" values="0;1.08;.97;1" keyTimes="0;.6;.85;1" dur=".45s" fill="freeze"/>'
@@ -75,7 +84,7 @@ def build(mid, anim):
 <g transform="translate(120 120)"><g>{pop}<g transform="translate(-120 -120)"><g clip-path="url(#c)">
   <circle cx="120" cy="120" r="116" fill="{C["blush"]}"/>
   <circle cx="120" cy="120" r="104" fill="none" stroke="{C["bg"]}" stroke-width="2" stroke-dasharray="1 7" stroke-linecap="round" opacity=".9"/>
-  <g>{jump}{dot_svg}
+  <g>{jump}{hole}{dot_svg}
     <g opacity="{0 if anim else 1}">{enter}{"".join(out)}{details}</g>
   </g>
   {spark(178, 70, .75, END)}{spark(64, 168, .5, END+.6)}{spark(176, 176, .4, END+1)}
