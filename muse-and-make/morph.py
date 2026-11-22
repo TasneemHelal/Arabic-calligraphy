@@ -3,7 +3,7 @@ import math
 from build import C
 from brush import M1, M2, MIDS, to_d, length
 
-LA, RB = (30, 131), (208, 109)          # brush axis: handle end (left) -> bristle tip (right)
+LA, RB = (54, 128), (192, 111)          # brush axis: handle end (left) -> bristle tip (right)
 SPLIT = [0, .5, .63, .93]                  # handle | ferrule | bristles
 lerp = lambda f: (round(LA[0] + (RB[0]-LA[0])*f, 2), round(LA[1] + (RB[1]-LA[1])*f, 2))
 
@@ -44,7 +44,7 @@ def build(mid, anim):
     fade = lambda d=.18: f'<animate attributeName="opacity" to="0" begin="{T_M:.2f}s" dur="{d}s" fill="freeze"/>' if anim else ""
     bx0, bx1 = lerp(SPLIT[2]), RB
     details = f'''<g transform="rotate({ang:.2f} {bx0[0]} {bx0[1]})">
-      <path d="M {bx0[0]-1} {bx0[1]-6.5} C {bx0[0]+14} {bx0[1]-11}, {bx0[0]+40} {bx0[1]-10}, {bx0[0]+78} {bx0[1]} C {bx0[0]+40} {bx0[1]+10}, {bx0[0]+14} {bx0[1]+11}, {bx0[0]-1} {bx0[1]+6.5} Z" fill="{C["ink"]}">{fade()}</path>
+      <path d="M {bx0[0]-1} {bx0[1]-6.5} C {bx0[0]+11} {bx0[1]-11}, {bx0[0]+31} {bx0[1]-10}, {bx0[0]+60} {bx0[1]} C {bx0[0]+31} {bx0[1]+10}, {bx0[0]+11} {bx0[1]+11}, {bx0[0]-1} {bx0[1]+6.5} Z" fill="{C["ink"]}">{fade()}</path>
     </g>
     <path d="M {lerp(.06)[0]} {lerp(.06)[1]-2.2} L {lerp(.44)[0]} {lerp(.44)[1]-2.2}" stroke="{C["bg"]}" stroke-width="1.6" stroke-linecap="round" opacity=".5">{fade(.12)}</path>
     <g fill="{C["mustard"]}">{"".join(f'<circle cx="{lerp(f)[0]}" cy="{lerp(f)[1]}" r="1.8">{fade(.12)}</circle>' for f in (.535, .565, .595))}</g>'''
@@ -62,7 +62,7 @@ def build(mid, anim):
               f'<set attributeName="opacity" to="1" begin="{b:.2f}s" fill="freeze"/>') if anim else ""
         dot_svg += f'<circle cx="{x}" cy="{y}" r="{r}" fill="{C[c]}" opacity="{0 if anim else 1}">{an}</circle>'
     hole_an = f'<animate attributeName="r" values="0;12.5;9;10" keyTimes="0;.5;.8;1" begin="{END-.05:.2f}s" dur=".4s" fill="freeze"/>' if anim else ""
-    hole = f'<circle cx="135" cy="193" r="{0 if anim else 10}" fill="{C["bg"]}">{hole_an}</circle>'
+    hole = f'<circle cx="94" cy="190" r="{0 if anim else 10}" fill="{C["bg"]}">{hole_an}</circle>'
 
     def spark(x, y, s, beg):
         an = (f'<animate attributeName="opacity" values="0;1;0" dur="1.4s" begin="{beg:.2f}s" repeatCount="indefinite"/>'
@@ -87,7 +87,7 @@ def build(mid, anim):
   <g>{jump}{hole}{dot_svg}
     <g opacity="{0 if anim else 1}">{enter}{"".join(out)}{details}</g>
   </g>
-  {spark(178, 70, .75, END)}{spark(64, 168, .5, END+.6)}{spark(176, 176, .4, END+1)}
+  {spark(178, 70, .75, END)}{spark(58, 150, .5, END+.6)}{spark(176, 176, .4, END+1)}
 </g></g></g></g>'''
     return (f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 240" width="480" height="480" role="img" aria-label="Muse &amp; Make">'
             f'<title>Muse &amp; Make</title>{body}</svg>\n')
