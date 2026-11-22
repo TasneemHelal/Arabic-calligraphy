@@ -62,7 +62,7 @@ def build(mid, anim):
               f'<set attributeName="opacity" to="1" begin="{b:.2f}s" fill="freeze"/>') if anim else ""
         dot_svg += f'<circle cx="{x}" cy="{y}" r="{r}" fill="{C[c]}" opacity="{0 if anim else 1}">{an}</circle>'
     hole_an = f'<animate attributeName="r" values="0;12.5;9;10" keyTimes="0;.5;.8;1" begin="{END-.05:.2f}s" dur=".4s" fill="freeze"/>' if anim else ""
-    hole = f'<circle cx="148" cy="191" r="{0 if anim else 10}" fill="{C["bg"]}">{hole_an}</circle>'
+    hole = f'<circle cx="135" cy="193" r="{0 if anim else 10}" fill="{C["bg"]}">{hole_an}</circle>'
 
     def spark(x, y, s, beg):
         an = (f'<animate attributeName="opacity" values="0;1;0" dur="1.4s" begin="{beg:.2f}s" repeatCount="indefinite"/>'
