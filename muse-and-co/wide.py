@@ -8,7 +8,7 @@ WORDS = ["Colors", "Collectives", "Communities", "Collaborations"]
 FR = 'font-family="Fraunces, Georgia, serif" font-weight="500" font-size="72" letter-spacing="-1"'
 X_AMP, X_CO = 180, 246
 X_SUF = X_CO + W["Co"]
-TAG_W = W[" · ".join(WORDS)]
+NAME_W = round(X_SUF + W["."], 1)   # width of "Muse & Co."
 
 def inner(svg): return re.sub(r'^<svg[^>]*>|</svg>\s*$', '', svg.strip())
 
@@ -25,15 +25,14 @@ def rise(beg):
 def wordmark(anim, suffix_block=""):
     o = ' opacity="0"' if anim else ""
     r = rise if anim else (lambda b: "")
-    rule_an = (f'<animate attributeName="width" from="0" to="{TAG_W}" begin="{T_FINAL+.2:.2f}s" dur=".5s" calcMode="spline" keyTimes="0;1" keySplines=".6 0 .2 1" fill="freeze"/>' if anim else "")
+    rule_an = (f'<animate attributeName="width" from="0" to="{NAME_W}" begin="{T_FINAL+.2:.2f}s" dur=".5s" calcMode="spline" keyTimes="0;1" keySplines=".6 0 .2 1" fill="freeze"/>' if anim else "")
     return f'''<g transform="translate(272 0)">
   <g{o}>{r(1.25)}<text x="0" y="122" {FR} fill="{C["ink"]}">Muse</text></g>
   <g{o}>{r(1.4)}<text x="{X_AMP}" y="124" font-family="Fraunces, Georgia, serif" font-style="italic" font-size="78" fill="{C["coral"]}">&amp;</text></g>
   <g{o}>{r(1.55)}<text x="{X_CO}" y="122" {FR} fill="{C["ink"]}">Co</text></g>
   {suffix_block if anim else f'<text x="{X_SUF}" y="122" {FR} fill="{C["ink"]}">.</text>'}
-  <rect x="2" y="144" width="{0 if anim else TAG_W}" height="3" rx="1.5" fill="{C["sage"]}">{rule_an}</rect>
-  <g{o}>{r(round(T_FINAL+.45, 2))}{tagline()}</g>
-  <g{o}>{r(round(T_FINAL+.6, 2))}<text x="2" y="206" font-family="Nunito, Arial, sans-serif" font-weight="700" font-size="16" letter-spacing="1.5" fill="{C["coral"]}">museandco.art</text></g>
+  <rect x="2" y="144" width="{0 if anim else NAME_W}" height="3" rx="1.5" fill="{C["sage"]}">{rule_an}</rect>
+  <g{o}>{r(round(T_FINAL+.45, 2))}<text x="2" y="182" font-family="Nunito, Arial, sans-serif" font-weight="700" font-size="16" letter-spacing="1.5" fill="{C["coral"]}">museandco.art</text></g>
 </g>'''
 
 # word timeline
@@ -44,7 +43,7 @@ T_FINAL = T0 + len(WORDS) * STEP
 def suffixes():
     out = [f'<defs><clipPath id="band"><rect x="{X_SUF-4}" y="46" width="420" height="102"/></clipPath></defs><g clip-path="url(#band)">']
     for w, t in zip(WORDS, starts):
-        out.append(f'<text x="{X_SUF}" y="122" {FR} fill="{C["ink"]}" opacity="0">{w[2:]}'
+        out.append(f'<text x="{X_SUF}" y="122" {FR} fill="{C["coral"]}" opacity="0">{w[2:]}'
                    f'<animate attributeName="opacity" values="0;1;1;0" keyTimes="0;.18;.8;1" begin="{t:.2f}s" dur="{STEP}s"/>'
                    f'<animateTransform attributeName="transform" type="translate" values="0 56;0 -5;0 0;0 0;0 -56" keyTimes="0;.18;.26;.8;1" '
                    f'calcMode="spline" keySplines=".2 .8 .3 1;.4 0 .6 1;0 0 1 1;.6 0 .8 .4" begin="{t:.2f}s" dur="{STEP}s"/></text>')
@@ -54,14 +53,15 @@ def suffixes():
     return "".join(out)
 
 def static():
-    return f'''<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 740 240" width="1480" height="480" role="img" aria-label="Muse &amp; Co.">
+    SW = int(272 + NAME_W + 24)
+    return f'''<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {SW} 240" width="{SW*2}" height="480" role="img" aria-label="Muse &amp; Co.">
 <title>Muse &amp; Co.</title><style><![CDATA[{FONT}]]></style>
 <g>{inner(build("amp", False))}</g>{wordmark(False)}
 </svg>
 '''
 
 def animated(CW=1000):
-    comp = lambda suf_w: 272 + max(X_SUF + suf_w, TAG_W)
+    comp = lambda suf_w: 272 + max(X_SUF + suf_w, NAME_W)
     shift = lambda suf_w: round((CW - comp(suf_w)) / 2, 1)
     final = shift(W["."])
     fixed = shift(max(W[w[2:]] for w in WORDS))   # one fixed position that fits the longest word
