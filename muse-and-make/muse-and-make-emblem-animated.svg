@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 240" width="480" height="480" role="img" aria-label="Muse &amp; Make">
+<title>Muse &amp; Make</title>
+<style><![CDATA[@import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;1,9..144,400&family=Nunito:wght@700&display=swap');
+.m{stroke-dasharray:1 1;stroke-dashoffset:1;opacity:0;animation:show 0s .5s both,draw 1.6s .5s cubic-bezier(.6,0,.3,1) both}
+@keyframes show{to{opacity:1}}
+.blob{transform-origin:120px 120px;transform:scale(0);animation:pop .7s cubic-bezier(.3,1.5,.6,1) both}
+.thumb{transform-origin:70px 196px;transform:scale(0);animation:pop .4s .4s cubic-bezier(.3,1.5,.6,1) both}
+.dot{transform-box:fill-box;transform-origin:center;transform:scale(0) translateY(-30px);animation:drop .6s cubic-bezier(.3,1.6,.5,1) both}
+.d0{animation-delay:1.9s}.d1{animation-delay:2.05s}.d2{animation-delay:2.2s}.d3{animation-delay:2.35s}
+.sp1,.sp2{transform-box:fill-box;transform-origin:center;opacity:0;animation:twinkle 2.4s 2.6s ease-in-out infinite}
+.sp2{animation-delay:3.4s}
+.w1,.amp,.w2,.tag{opacity:0;animation:rise .8s cubic-bezier(.2,.8,.2,1) both}
+.w1{animation-delay:1.2s}.amp{animation-delay:1.5s}.w2{animation-delay:1.8s}.tag{animation-delay:2.5s}
+.amp{transform-box:fill-box;transform-origin:center}
+.rule{transform-box:fill-box;transform-origin:left;transform:scaleX(0);animation:grow .9s 2.2s cubic-bezier(.6,0,.2,1) both}
+.icon{transform-origin:120px 120px;animation:breathe 4s 3.2s ease-in-out infinite}
+@keyframes draw{to{stroke-dashoffset:0}}
+@keyframes fade{to{opacity:1}}
+@keyframes pop{to{transform:scale(1)}}
+@keyframes drop{to{transform:scale(1) translateY(0)}}
+@keyframes rise{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:none}}
+@keyframes grow{to{transform:scaleX(1)}}
+@keyframes twinkle{0%,100%{opacity:0;transform:scale(.4) rotate(0)}40%,60%{opacity:1;transform:scale(1) rotate(45deg)}}
+@keyframes breathe{0%,100%{transform:rotate(0)}50%{transform:rotate(-2deg)}}
+@media (prefers-reduced-motion:reduce){*{animation-duration:.01s!important;animation-iteration-count:1!important}}
+]]></style>
+<g class="icon">
+  <path class="blob" d="M120 14 C 176 12, 222 50, 226 110 C 230 168, 190 222, 126 226 C 64 230, 16 192, 14 128 C 12 66, 60 16, 120 14 Z" fill="#F6DCD3"/>
+  <circle class="thumb" style="transform-origin:202px 116px" cx="202" cy="116" r="10" fill="#FBF4EA"/>
+  <circle class="dot d0" cx="86" cy="50" r="8.5" fill="#E9806E"/><circle class="dot d1" cx="108" cy="39" r="7" fill="#EDB94F"/><circle class="dot d2" cx="133" cy="37" r="7.5" fill="#97B694"/><circle class="dot d3" cx="156" cy="44" r="6" fill="#B7A3D8"/>
+  <g transform="translate(118 101) scale(0.56) translate(-137 -113)">
+    <path class="m" d="M62 168 C 64 128, 70 92, 82 72 C 92 56, 102 74, 108 98 C 113 118, 118 124, 122 108 C 128 84, 136 60, 150 58 C 166 56, 170 100, 172 136 C 173 158, 178 172, 192 168 C 202 165, 208 154, 212 144" pathLength="1" fill="none" stroke="#3D2C3E" stroke-width="16" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+  <text class="w1" x="106" y="182" text-anchor="end" font-family="Fraunces, Georgia, serif" font-weight="500" font-size="27" fill="#3D2C3E">Muse</text>
+  <text class="amp" x="120" y="183" text-anchor="middle" font-family="Fraunces, Georgia, serif" font-style="italic" font-size="29" fill="#E9806E">&amp;</text>
+  <text class="w2" x="133" y="182" font-family="Fraunces, Georgia, serif" font-weight="500" font-size="27" fill="#3D2C3E">Make</text>
+  <rect class="rule" x="92" y="195" width="56" height="2.4" rx="1.2" fill="#97B694"/>
+  <path class="sp1" transform="translate(206 30) scale(1.1)" fill="#EDB94F" d="M0 -10 C 1.5 -3, 3 -1.5, 10 0 C 3 1.5, 1.5 3, 0 10 C -1.5 3, -3 1.5, -10 0 C -3 -1.5, -1.5 -3, 0 -10 Z"/><path class="sp2" transform="translate(30 92) scale(0.7)" fill="#EDB94F" d="M0 -10 C 1.5 -3, 3 -1.5, 10 0 C 3 1.5, 1.5 3, 0 10 C -1.5 3, -3 1.5, -10 0 C -3 -1.5, -1.5 -3, 0 -10 Z"/>
+</g>
+</svg>

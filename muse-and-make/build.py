@@ -68,6 +68,28 @@ def svg(w, body, css=""):
 </svg>
 '''
 
+EM_DOTS = [(86, 50, 8.5, "coral"), (108, 39, 7, "mustard"), (133, 37, 7.5, "sage"), (156, 44, 6, "lav")]
+
+def emblem(anim):
+    a = (lambda c: f' class="{c}"') if anim else (lambda c: "")
+    dots = "".join(f'<circle{a("dot d%d" % i)} cx="{x}" cy="{y}" r="{r}" fill="{C[c]}"/>' for i, (x, y, r, c) in enumerate(EM_DOTS))
+    f = 'font-family="Fraunces, Georgia, serif"'
+    return f'''<g{a("icon")}>
+  <path{a("blob")} d="{BLOB}" fill="{C["blush"]}"/>
+  <circle class="{"thumb" if anim else ""}" style="transform-origin:202px 116px" cx="202" cy="116" r="10" fill="{C["bg"]}"/>
+  {dots}
+  <g transform="translate(118 101) scale(0.56) translate(-137 -113)">
+    <path{a("m")} d="{M_PATH}" pathLength="1" fill="none" stroke="{C["ink"]}" stroke-width="16" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+  <text{a("w1")} x="106" y="182" text-anchor="end" {f} font-weight="500" font-size="27" fill="{C["ink"]}">Muse</text>
+  <text{a("amp")} x="120" y="183" text-anchor="middle" {f} font-style="italic" font-size="29" fill="{C["coral"]}">&amp;</text>
+  <text{a("w2")} x="133" y="182" {f} font-weight="500" font-size="27" fill="{C["ink"]}">Make</text>
+  <rect{a("rule")} x="92" y="195" width="56" height="2.4" rx="1.2" fill="{C["sage"]}"/>
+  {sparkle(206, 30, 1.1, "sp1" if anim else "")}{sparkle(30, 92, 0.7, "sp2" if anim else "")}
+</g>'''
+
+open("muse-and-make-emblem.svg", "w").write(svg(240, emblem(False)))
+open("muse-and-make-emblem-animated.svg", "w").write(svg(240, emblem(True), ANIM_CSS))
 open("muse-and-make-logo.svg", "w").write(svg(720, icon(False) + wordmark(False)))
 open("muse-and-make-icon.svg", "w").write(svg(240, icon(False)))
 open("muse-and-make-logo-animated.svg", "w").write(svg(720, icon(True) + wordmark(True), ANIM_CSS))

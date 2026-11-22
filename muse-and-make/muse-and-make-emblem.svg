@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 240" width="480" height="480" role="img" aria-label="Muse &amp; Make">
+<title>Muse &amp; Make</title>
+<style><![CDATA[@import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;1,9..144,400&family=Nunito:wght@700&display=swap');]]></style>
+<g>
+  <path d="M120 14 C 176 12, 222 50, 226 110 C 230 168, 190 222, 126 226 C 64 230, 16 192, 14 128 C 12 66, 60 16, 120 14 Z" fill="#F6DCD3"/>
+  <circle class="" style="transform-origin:202px 116px" cx="202" cy="116" r="10" fill="#FBF4EA"/>
+  <circle cx="86" cy="50" r="8.5" fill="#E9806E"/><circle cx="108" cy="39" r="7" fill="#EDB94F"/><circle cx="133" cy="37" r="7.5" fill="#97B694"/><circle cx="156" cy="44" r="6" fill="#B7A3D8"/>
+  <g transform="translate(118 101) scale(0.56) translate(-137 -113)">
+    <path d="M62 168 C 64 128, 70 92, 82 72 C 92 56, 102 74, 108 98 C 113 118, 118 124, 122 108 C 128 84, 136 60, 150 58 C 166 56, 170 100, 172 136 C 173 158, 178 172, 192 168 C 202 165, 208 154, 212 144" pathLength="1" fill="none" stroke="#3D2C3E" stroke-width="16" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+  <text x="106" y="182" text-anchor="end" font-family="Fraunces, Georgia, serif" font-weight="500" font-size="27" fill="#3D2C3E">Muse</text>
+  <text x="120" y="183" text-anchor="middle" font-family="Fraunces, Georgia, serif" font-style="italic" font-size="29" fill="#E9806E">&amp;</text>
+  <text x="133" y="182" font-family="Fraunces, Georgia, serif" font-weight="500" font-size="27" fill="#3D2C3E">Make</text>
+  <rect x="92" y="195" width="56" height="2.4" rx="1.2" fill="#97B694"/>
+  <path class="" transform="translate(206 30) scale(1.1)" fill="#EDB94F" d="M0 -10 C 1.5 -3, 3 -1.5, 10 0 C 3 1.5, 1.5 3, 0 10 C -1.5 3, -3 1.5, -10 0 C -3 -1.5, -1.5 -3, 0 -10 Z"/><path class="" transform="translate(30 92) scale(0.7)" fill="#EDB94F" d="M0 -10 C 1.5 -3, 3 -1.5, 10 0 C 3 1.5, 1.5 3, 0 10 C -1.5 3, -3 1.5, -10 0 C -3 -1.5, -1.5 -3, 0 -10 Z"/>
+</g>
+</svg>
