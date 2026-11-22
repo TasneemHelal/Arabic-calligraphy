@@ -63,12 +63,10 @@ def build_reel():
         out.append(f'<g transform="translate({x} {y}) scale({s})"><path opacity="0" fill="{C["mustard"]}" d="M0 -10 C 1.5 -3, 3 -1.5, 10 0 C 3 1.5, 1.5 3, 0 10 C -1.5 3, -3 1.5, -10 0 C -3 -1.5, -1.5 -3, 0 -10 Z" transform="scale(2.2)">'
                    f'<animate attributeName="opacity" values="0;1;0" dur="1.6s" begin="{t_cs+1+k*.35:.2f}s" repeatCount="indefinite"/></path></g>')
 
-    # 4) what's coming + domain
+    # 4) domain
     t_sub = t_cs + 1.35
-    out.append(f'<g opacity="0">{rise(t_sub, 30)}<text x="540" y="1480" text-anchor="middle" {N} font-size="40" fill="{C["ink"]}" fill-opacity=".8">Art workshops · Baby gift boxes</text></g>')
-    out.append(f'<g opacity="0">{rise(t_sub+.15, 30)}<text x="540" y="1534" text-anchor="middle" {N} font-size="40" fill="{C["ink"]}" fill-opacity=".8">Art products · Gallery</text></g>')
-    t_dom = t_sub + .55
-    out.append(f'<g transform="translate(540 1622)"><g opacity="0"><set attributeName="opacity" to="1" begin="{t_dom:.2f}s" fill="freeze"/>{pop(t_dom)}'
+    t_dom = t_sub + .1
+    out.append(f'<g transform="translate(540 1500)"><g opacity="0"><set attributeName="opacity" to="1" begin="{t_dom:.2f}s" fill="freeze"/>{pop(t_dom)}'
                f'<rect x="-205" y="-40" width="410" height="80" rx="40" fill="{C["coral"]}"/>'
                f'<text x="0" y="14" text-anchor="middle" {N} font-size="40" fill="{C["bg"]}" letter-spacing="1">museandco.art</text></g></g>')
 
