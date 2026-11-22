@@ -119,8 +119,8 @@ def build(mid, anim):
                  f'<animateTransform attributeName="transform" type="translate" values="0 0;-12 4;0 0" keyTimes="0;.7;1" begin="{T_M-.22:.2f}s" dur=".26s" additive="sum"/>'
                  f'<animateTransform attributeName="transform" type="rotate" values="0 120 120;-6 120 120;0 120 120" keyTimes="0;.7;1" begin="{T_M-.22:.2f}s" dur=".26s" additive="sum"/>'
                  f'<set attributeName="opacity" to="1" begin="{T_IN-.05:.2f}s" fill="freeze"/>')
-        jump = f'<animateTransform attributeName="transform" type="translate" values="0 0;0 -5;0 0" keyTimes="0;.4;1" begin="{END+.3:.2f}s" dur=".4s"/>'
-        pop = f'<animateTransform attributeName="transform" type="scale" values="0;1.08;.97;1" keyTimes="0;.6;.85;1" dur=".45s" fill="freeze"/>'
+        jump = ""   # badge stays still
+        pop = ""    # circle is present from the start, no pop-in
     else: enter = jump = pop = ""
 
     body = f'''<defs><clipPath id="c"><circle cx="120" cy="120" r="116"/></clipPath></defs>
