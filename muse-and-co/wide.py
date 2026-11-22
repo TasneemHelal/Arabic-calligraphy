@@ -27,14 +27,12 @@ def rise(beg):
 def wordmark(anim, suffix_block=""):
     o = ' opacity="0"' if anim else ""
     r = rise if anim else (lambda b: "")
-    rule_an = (f'<animate attributeName="width" from="0" to="{NAME_W}" begin="{T_FINAL+.2:.2f}s" dur=".5s" calcMode="spline" keyTimes="0;1" keySplines=".6 0 .2 1" fill="freeze"/>' if anim else "")
+    rule_an = '' and (f'<animate attributeName="width" from="0" to="{NAME_W}" begin="{T_FINAL+.2:.2f}s" dur=".5s" calcMode="spline" keyTimes="0;1" keySplines=".6 0 .2 1" fill="freeze"/>' if anim else "")
     return f'''<g transform="translate(272 0)">
-  <g{o}>{r(1.25)}<text x="0" y="122" {FR} fill="{C["ink"]}">Muse</text></g>
-  <g{o}>{r(1.4)}<text x="{X_AMP}" y="122" {FR} fill="{C["coral"]}">&amp;</text></g>
-  <g{o}>{r(1.55)}<text x="{X_CO}" y="122" {FR} fill="{C["ink"]}">Co</text></g>
-  {suffix_block if anim else f'<text x="{X_SUF}" y="122" {FR} fill="{C["ink"]}">.</text>'}
-  <rect x="2" y="144" width="{0 if anim else NAME_W}" height="3" rx="1.5" fill="{C["sage"]}">{rule_an}</rect>
-  <g{o}>{r(round(T_FINAL+.45, 2))}<text x="2" y="182" font-family="Nunito, Arial, sans-serif" font-weight="700" font-size="16" letter-spacing="1.5" fill="{C["coral"]}">museandco.art</text></g>
+  <g{o}>{r(1.25)}<text x="0" y="146" {FR} fill="{C["ink"]}">Muse</text></g>
+  <g{o}>{r(1.4)}<text x="{X_AMP}" y="146" {FR} fill="{C["coral"]}">&amp;</text></g>
+  <g{o}>{r(1.55)}<text x="{X_CO}" y="146" {FR} fill="{C["ink"]}">Co</text></g>
+  {suffix_block if anim else f'<text x="{X_SUF}" y="146" {FR} fill="{C["ink"]}">.</text>'}
 </g>'''
 
 # word timeline
@@ -43,13 +41,13 @@ starts = [T0 + i * STEP for i in range(len(WORDS))]
 T_FINAL = T0 + len(WORDS) * STEP
 
 def suffixes():
-    out = [f'<defs><clipPath id="band"><rect x="{X_SUF-4}" y="46" width="420" height="102"/></clipPath></defs><g clip-path="url(#band)">']
+    out = [f'<defs><clipPath id="band"><rect x="{X_SUF-4}" y="70" width="420" height="102"/></clipPath></defs><g clip-path="url(#band)">']
     for w, t in zip(WORDS, starts):
-        out.append(f'<text x="{X_SUF}" y="122" {FR} fill="{C["coral"]}" opacity="0">{w[2:]}'
+        out.append(f'<text x="{X_SUF}" y="146" {FR} fill="{C["coral"]}" opacity="0">{w[2:]}'
                    f'<animate attributeName="opacity" values="0;1;1;0" keyTimes="0;.18;.8;1" begin="{t:.2f}s" dur="{STEP}s"/>'
                    f'<animateTransform attributeName="transform" type="translate" values="0 56;0 -5;0 0;0 0;0 -56" keyTimes="0;.18;.26;.8;1" '
                    f'calcMode="spline" keySplines=".2 .8 .3 1;.4 0 .6 1;0 0 1 1;.6 0 .8 .4" begin="{t:.2f}s" dur="{STEP}s"/></text>')
-    out.append(f'<text x="{X_SUF}" y="122" {FR} fill="{C["ink"]}" opacity="0">.'
+    out.append(f'<text x="{X_SUF}" y="146" {FR} fill="{C["ink"]}" opacity="0">.'
                f'<set attributeName="opacity" to="1" begin="{T_FINAL:.2f}s" fill="freeze"/>'
                f'<animateTransform attributeName="transform" type="translate" values="0 56;0 -5;0 0" keyTimes="0;.7;1" calcMode="spline" keySplines=".2 .8 .3 1;.4 0 .6 1" begin="{T_FINAL:.2f}s" dur=".25s" fill="freeze"/></text></g>')
     return "".join(out)
