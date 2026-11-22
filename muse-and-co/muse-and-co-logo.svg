@@ -1,5 +1,5 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 642 240" width="1284" height="480" role="img" aria-label="Muse &amp; Co.">
-<title>Muse &amp; Co.</title><style><![CDATA[@import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;1,9..144,400&family=Nunito:wght@700&display=swap');]]></style>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 662 240" width="1324" height="480" role="img" aria-label="Muse &amp; Co.">
+<title>Muse &amp; Co.</title><style><![CDATA[@import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@600&family=Nunito:wght@700&display=swap');]]></style>
 <g><title>Muse &amp; Make</title><defs><clipPath id="c"><circle cx="120" cy="120" r="116"/></clipPath></defs>
 <g transform="translate(120 120)"><g><g transform="translate(-120 -120)"><g clip-path="url(#c)">
   <circle cx="120" cy="120" r="116" fill="#F6DCD3"/>
@@ -9,11 +9,11 @@
   </g>
   <g transform="translate(178 70) scale(0.75)"><path opacity="1" fill="#EDB94F" d="M0 -10 C 1.5 -3, 3 -1.5, 10 0 C 3 1.5, 1.5 3, 0 10 C -1.5 3, -3 1.5, -10 0 C -3 -1.5, -1.5 -3, 0 -10 Z"></path></g><g transform="translate(58 150) scale(0.5)"><path opacity="1" fill="#EDB94F" d="M0 -10 C 1.5 -3, 3 -1.5, 10 0 C 3 1.5, 1.5 3, 0 10 C -1.5 3, -3 1.5, -10 0 C -3 -1.5, -1.5 -3, 0 -10 Z"></path></g><g transform="translate(176 176) scale(0.4)"><path opacity="1" fill="#EDB94F" d="M0 -10 C 1.5 -3, 3 -1.5, 10 0 C 3 1.5, 1.5 3, 0 10 C -1.5 3, -3 1.5, -10 0 C -3 -1.5, -1.5 -3, 0 -10 Z"></path></g>
 </g></g></g></g></g><g transform="translate(272 0)">
-  <g><text x="0" y="122" font-family="Fraunces, Georgia, serif" font-weight="500" font-size="72" letter-spacing="-1" fill="#3D2C3E">Muse</text></g>
-  <g><text x="180" y="124" font-family="Fraunces, Georgia, serif" font-style="italic" font-size="78" fill="#E9806E">&amp;</text></g>
-  <g><text x="246" y="122" font-family="Fraunces, Georgia, serif" font-weight="500" font-size="72" letter-spacing="-1" fill="#3D2C3E">Co</text></g>
-  <text x="331.5" y="122" font-family="Fraunces, Georgia, serif" font-weight="500" font-size="72" letter-spacing="-1" fill="#3D2C3E">.</text>
-  <rect x="2" y="144" width="346.7" height="3" rx="1.5" fill="#97B694"></rect>
+  <g><text x="0" y="122" font-family="Quicksand, Nunito, Arial, sans-serif" font-weight="600" font-size="72" letter-spacing="-0.5" fill="#3D2C3E">Muse</text></g>
+  <g><text x="193.3" y="122" font-family="Quicksand, Nunito, Arial, sans-serif" font-weight="600" font-size="72" letter-spacing="-0.5" fill="#E9806E">&amp;</text></g>
+  <g><text x="261.1" y="122" font-family="Quicksand, Nunito, Arial, sans-serif" font-weight="600" font-size="72" letter-spacing="-0.5" fill="#3D2C3E">Co</text></g>
+  <text x="350.3" y="122" font-family="Quicksand, Nunito, Arial, sans-serif" font-weight="600" font-size="72" letter-spacing="-0.5" fill="#3D2C3E">.</text>
+  <rect x="2" y="144" width="366.1" height="3" rx="1.5" fill="#97B694"></rect>
   <g><text x="2" y="182" font-family="Nunito, Arial, sans-serif" font-weight="700" font-size="16" letter-spacing="1.5" fill="#E9806E">museandco.art</text></g>
 </g>
 </svg>

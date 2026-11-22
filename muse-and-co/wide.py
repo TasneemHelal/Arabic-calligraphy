@@ -2,11 +2,13 @@
 # Colors -> Collectives -> Communities -> Collaborations and lands on "Co." (the "Co" stays fixed).
 import re, json
 from emblem import build, C
-FONT = "@import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;1,9..144,400&family=Nunito:wght@700&display=swap');"
+FONT = "@import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@600&family=Nunito:wght@700&display=swap');"
 W = json.load(open("widths.json"))
 WORDS = ["Colors", "Collectives", "Communities", "Collaborations"]
-FR = 'font-family="Fraunces, Georgia, serif" font-weight="500" font-size="72" letter-spacing="-1"'
-X_AMP, X_CO = 180, 246
+FR = 'font-family="Quicksand, Nunito, Arial, sans-serif" font-weight="600" font-size="72" letter-spacing="-0.5"'
+GAP = 18
+X_AMP = round(W["Muse"] + GAP, 1)
+X_CO = round(X_AMP + W["&"] + GAP, 1)
 X_SUF = X_CO + W["Co"]
 NAME_W = round(X_SUF + W["."], 1)   # width of "Muse & Co."
 
@@ -28,7 +30,7 @@ def wordmark(anim, suffix_block=""):
     rule_an = (f'<animate attributeName="width" from="0" to="{NAME_W}" begin="{T_FINAL+.2:.2f}s" dur=".5s" calcMode="spline" keyTimes="0;1" keySplines=".6 0 .2 1" fill="freeze"/>' if anim else "")
     return f'''<g transform="translate(272 0)">
   <g{o}>{r(1.25)}<text x="0" y="122" {FR} fill="{C["ink"]}">Muse</text></g>
-  <g{o}>{r(1.4)}<text x="{X_AMP}" y="124" font-family="Fraunces, Georgia, serif" font-style="italic" font-size="78" fill="{C["coral"]}">&amp;</text></g>
+  <g{o}>{r(1.4)}<text x="{X_AMP}" y="122" {FR} fill="{C["coral"]}">&amp;</text></g>
   <g{o}>{r(1.55)}<text x="{X_CO}" y="122" {FR} fill="{C["ink"]}">Co</text></g>
   {suffix_block if anim else f'<text x="{X_SUF}" y="122" {FR} fill="{C["ink"]}">.</text>'}
   <rect x="2" y="144" width="{0 if anim else NAME_W}" height="3" rx="1.5" fill="{C["sage"]}">{rule_an}</rect>
@@ -60,7 +62,7 @@ def static():
 </svg>
 '''
 
-def animated(CW=1000):
+def animated(CW=1060):
     comp = lambda suf_w: 272 + max(X_SUF + suf_w, NAME_W)
     shift = lambda suf_w: round((CW - comp(suf_w)) / 2, 1)
     final = shift(W["."])
